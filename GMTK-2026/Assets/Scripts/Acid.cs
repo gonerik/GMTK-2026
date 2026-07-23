@@ -13,7 +13,12 @@ namespace DefaultNamespace
         private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
 
         public List<(IConsumer, IEatable)> EatRules { get; }
-
+        
+        void Start()
+        {
+            AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size - 1 == x.Item2.Size));
+        }
+        
         public virtual void Eat(IConsumer consumer)
         {
             gameObject.SetActive(false);
