@@ -40,6 +40,21 @@ namespace DefaultNamespace.Zenject
         public void UnregisterEatable(IEatable eatable)
         {
             _eatables.Remove(eatable);
+            
+            // Remove from targets dictionary
+            List<IConsumer> keysToRemove = new List<IConsumer>();
+            foreach (var pair in targets)
+            {
+                if (pair.Value == eatable)
+                {
+                    keysToRemove.Add(pair.Key);
+                }
+            }
+
+            foreach (var key in keysToRemove)
+            {
+                targets.Remove(key);
+            }
         }
 
         public void RegisterConsumer(IConsumer consumer)
@@ -76,6 +91,7 @@ namespace DefaultNamespace.Zenject
             int eatableCount = _eatables.Count;
             
             NativeArray<Vector2> consumerPositions = new NativeArray<Vector2>(consumerCount, Allocator.Persistent);
+            NativeArray<float> detectionRanges = new NativeArray<float>(consumerCount, Allocator.Persistent);
             NativeArray<Vector2> eatablePositions = new NativeArray<Vector2>(eatableCount, Allocator.Persistent);
             NativeArray<int> targetIndices = new NativeArray<int>(consumerCount, Allocator.Persistent);
 
@@ -106,6 +122,7 @@ namespace DefaultNamespace.Zenject
                     continue;
                 }
                 consumerPositions[i] = cmb.transform.position;
+                detectionRanges[i] = consumer.DetectionRange;
                 targetIndices[i] = -1;
 
                 for (int j = 0; j < eatableCount; j++)
@@ -127,6 +144,7 @@ namespace DefaultNamespace.Zenject
                 var job = new CalculateTargetsJob
                 {
                     ConsumerPositions = consumerPositions,
+                    DetectionRanges = detectionRanges,
                     EatablePositions = eatablePositions,
                     CanEatMatrix = canEatMatrix,
                     EatableCount = eatableCount,
@@ -148,6 +166,7 @@ namespace DefaultNamespace.Zenject
             targets = newTargets;
 
             consumerPositions.Dispose();
+            detectionRanges.Dispose();
             eatablePositions.Dispose();
             canEatMatrix.Dispose();
             targetIndices.Dispose();
@@ -157,6 +176,7 @@ namespace DefaultNamespace.Zenject
         private struct CalculateTargetsJob : IJobParallelFor
         {
             [ReadOnly] public NativeArray<Vector2> ConsumerPositions;
+            [ReadOnly] public NativeArray<float> DetectionRanges;
             [ReadOnly] public NativeArray<Vector2> EatablePositions;
             [ReadOnly] public NativeArray<bool> CanEatMatrix;
             public int EatableCount;
@@ -167,6 +187,9 @@ namespace DefaultNamespace.Zenject
                 Vector2 consumerPos = ConsumerPositions[index];
                 if (consumerPos == Vector2.zero) return;
 
+                float detectionRange = DetectionRanges[index];
+                float detectionRangeSq = detectionRange * detectionRange;
+
                 int closestIndex = -1;
                 float minDistanceSq = float.MaxValue;
 
@@ -175,7 +198,7 @@ namespace DefaultNamespace.Zenject
                     if (!CanEatMatrix[index * EatableCount + j]) continue;
 
                     float distSq = (EatablePositions[j] - consumerPos).sqrMagnitude;
-                    if (distSq < minDistanceSq)
+                    if (distSq <= detectionRangeSq && distSq < minDistanceSq)
                     {
                         minDistanceSq = distSq;
                         closestIndex = j;

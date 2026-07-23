@@ -31,7 +31,7 @@ namespace DefaultNamespace
 		
         public virtual void Eat(IConsumer consumer)
         {
-            gameObject.SetActive(false);
+            Destroy(gameObject);
         }
 
         public void AddEatRule(Predicate<(IConsumer, IEatable)> rule)

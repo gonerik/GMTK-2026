@@ -4,5 +4,6 @@
     {
         public void Consume(IEatable eatable);
         public void Grow();
+        public float DetectionRange { get; }
     }
 }
