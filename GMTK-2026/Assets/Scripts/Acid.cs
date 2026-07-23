@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefaultNamespace.Zenject;
 using Interfaces;
 using Unity.Burst;
 using UnityEngine;
+using Zenject;
 
 namespace DefaultNamespace
 {
@@ -13,6 +15,18 @@ namespace DefaultNamespace
         private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
 
         public List<(IConsumer, IEatable)> EatRules { get; }
+        
+        [Inject] private NavigationSystem navigationSystem;
+
+        private void Start()
+        {
+            navigationSystem.RegisterEatable(this);
+        }
+
+        private void OnDestroy()
+        {
+            navigationSystem.UnregisterEatable(this);
+        }
 
         public virtual void Eat(IConsumer consumer)
         {
@@ -24,7 +38,6 @@ namespace DefaultNamespace
             eatRules.Add(rule);
         }
 
-        [BurstCompile]
         public bool CanBeEaten(IConsumer consumer)
         {
             bool canBeEaten = true;
