@@ -8,7 +8,7 @@ namespace DefaultNamespace
 {
     public class Acid : MonoBehaviour, IEatable
     {
-        public Size Size => Size.Acid;
+        public CellSize CellSize => CellSize.Acid;
         
         private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
 
@@ -16,7 +16,7 @@ namespace DefaultNamespace
         
         void Start()
         {
-            AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size - 1 == x.Item2.Size));
+            AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.CellSize - 1 == x.Item2.CellSize));
         }
         
         public virtual void Eat(IConsumer consumer)
