@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DefaultNamespace;
+using DefaultNamespace.GrowStrategy;
 using DefaultNamespace.Zenject;
 using Interfaces;
 using UnityEngine;
@@ -14,27 +15,36 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
     [SerializeField] private CellMembrane membraneType;
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private GrowStrategyEnum growStrategy;
     public float DetectionRange => detectionRange;
     public CellSize CellSize => cellSize;
-    
-    private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
+    public int GrowThreshold { get; set; } = 1;
+
+    private List<Predicate<IEatable>> eatRules = new List<Predicate<IEatable>>();
     private IColor cellColor;
     private IMembrane cellMembrane;
+    private List<IEatable> eaten = new List<IEatable>();
+    //#TODO Add enum for GrowStrategy
+    private Dictionary<Type, int> growStrategies = new Dictionary<Type, int>();
+
+    public event Action<IEatable> OnConsume;
+    public event Action<IConsumer> OnEat;
+    public event Action<IConsumer> OnGrow;
 
     
     private float wanderTimer;
     private Vector2 currentWanderDirection;
     private bool isWandering;
     
+    
     [Inject] private NavigationSystem navigationSystem;
 
     void Start()
     {
         InitializeStrategies();
-        AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.CellSize - 1 == x.Item2.CellSize));
+        AddEatRule(new Predicate<IEatable>(x => CellSize - 1  == x.CellSize));
         navigationSystem.RegisterConsumer(this);
         navigationSystem.RegisterEatable(this);
-        AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.CellSize - 1 == x.Item2.CellSize));
     }
 
     private void OnDestroy()
@@ -72,10 +82,13 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
         }
     }
 
-    public void InitializeStrategies()
+    private void InitializeStrategies()
     {
-        cellColor = DefaultNamespace.CellStrategyFactory.CreateColor(colorType);
-        cellMembrane = DefaultNamespace.CellStrategyFactory.CreateMembrane(membraneType);
+        cellColor?.Unsubscribe(this);
+        cellMembrane?.Unsubscribe(this);
+
+        cellColor = CellStrategyFactory.CreateColor(colorType);
+        cellMembrane = CellStrategyFactory.CreateMembrane(membraneType);
 
         cellColor.Initialize(this);
         cellMembrane.Initialize(this);
@@ -113,35 +126,53 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
 
     public virtual void Consume(IEatable eatable)
     {
-        if (!eatable.CanBeEaten(this))
+        if (!CanBeEaten(eatable))
         {
             return;
         }
 
-        eatable.Eat(this);
+        OnConsume?.Invoke(eatable);
+        eaten.Add(eatable);
+        IGrowStrategy strategy = eatable.Eat(this);
+        if (!growStrategies.ContainsKey(strategy.GetType()))
+        {
+            growStrategies.Add(strategy.GetType(), 0);
+        }
+        growStrategies[strategy.GetType()]++;
+        TryGrow();
     }
 
-    public void Grow()
+    public void TryGrow()
     {
-
+        if (GrowThreshold <= eaten.Count)
+        {
+            OnGrow?.Invoke(this);
+            InitializeStrategies();
+        }
     }
 
-    public virtual void Eat(IConsumer consumer)
+    public virtual IGrowStrategy Eat(IConsumer consumer)
     {
-        gameObject.SetActive(false);
+        OnEat?.Invoke(consumer);
+        return CellStrategyFactory.CreateGrowStrategy(growStrategy);
     }
 
-    public void AddEatRule(Predicate<(IConsumer, IEatable)> rule)
+    public void Destroy()
+    {
+        Destroy(gameObject);
+    }
+
+    public void AddEatRule(Predicate<IEatable> rule)
     {
         eatRules.Add(rule);
     }
 
-    public bool CanBeEaten(IConsumer consumer)
+    public bool CanBeEaten(IEatable eatable)
     {
         bool canBeEaten = true;
         foreach (var rule in eatRules)
         {
-            canBeEaten = rule.Invoke((consumer, this)) && canBeEaten;
+            canBeEaten = rule.Invoke(eatable) && canBeEaten;
         }
         return canBeEaten;
     }

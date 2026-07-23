@@ -1,4 +1,5 @@
 ﻿using System;
+using DefaultNamespace.GrowStrategy;
 using DefaultNamespace.Strategies;
 using Interfaces;
 
@@ -33,6 +34,19 @@ namespace DefaultNamespace
                     return new Strategies.FluidMembrane();
                 default:
                     throw new System.ArgumentOutOfRangeException(nameof(membraneType), membraneType, null);
+            }
+        }
+
+        public static IGrowStrategy CreateGrowStrategy(GrowStrategyEnum growStrategy)
+        {
+            switch (growStrategy)
+            {
+                case GrowStrategyEnum.Divide:
+                    return new DivideGrowStrategy();
+                case GrowStrategyEnum.Grow:
+                    return new EnlargeStrategy();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(growStrategy), growStrategy, null);
             }
         }
     }
