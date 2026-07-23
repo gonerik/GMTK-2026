@@ -1,9 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Interfaces;
-using UnityEngine;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using DefaultNamespace;
+using DefaultNamespace.Zenject;
+using Interfaces;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using UnityEngine;
+using Zenject;
 
 public class Cell : MonoBehaviour, IEatable, IConsumer
 {
@@ -13,63 +19,84 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
     [SerializeField] private CellMembrane membraneType;
     [SerializeField] private float speed = 10f;
     [SerializeField] private float visionRadius = 1f;
-
+    [SerializeField] private float detectionRange = 10f;
+    [SerializeField] private float moveSpeed = 5f;
+    
     private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
     private IColor cellColor;
     private IMembrane cellMembrane;
+
+    
+    private float wanderTimer;
+    private Vector2 currentWanderDirection;
+    private bool isWandering;
+    
+    [Inject] private NavigationSystem navigationSystem;
 
     void Start()
     {
         InitializeStrategies();
         AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.CellSize - 1 == x.Item2.CellSize));
+        navigationSystem.RegisterConsumer(this);
+        navigationSystem.RegisterEatable(this);
+        AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size - 1 == x.Item2.Size));
     }
 
-    private void FixedUpdate()
+    private void OnDestroy()
     {
-        MoveTowardsClosestEatable();
+        navigationSystem.UnregisterConsumer(this);
+        navigationSystem.UnregisterEatable(this);
     }
 
-    private void MoveTowardsClosestEatable()
+    void FixedUpdate()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, visionRadius);
-        IEatable closestEatable = null;
-        float minDistance = float.MaxValue;
+        Vector2 targetDirection = Vector2.zero;
+        bool shouldMove = false;
 
-        foreach (var collider in colliders)
+        if (navigationSystem.targets.TryGetValue(this, out var target))
         {
-            if (collider.gameObject == gameObject) continue;
-
-            IEatable eatable = collider.GetComponent<IEatable>();
-            if (eatable != null && eatable.CanBeEaten(this))
+            if (target is MonoBehaviour targetMb && targetMb != null)
             {
-                float distance = Vector2.Distance(transform.position, collider.transform.position);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    closestEatable = eatable;
-                }
+                Vector2 toTarget = (Vector2)targetMb.transform.position - (Vector2)transform.position;
+                targetDirection = toTarget.normalized;
+                shouldMove = true;
+            }
+        }
+        else
+        {
+            if (HandleWandering(out var wanderDir))
+            {
+                targetDirection = wanderDir;
+                shouldMove = true;
             }
         }
 
-        if (closestEatable != null && closestEatable is MonoBehaviour eatableMono)
+        if (shouldMove)
         {
-            Vector2 direction = ((Vector2)eatableMono.transform.position - (Vector2)transform.position).normalized;
-            rb.AddForce(direction * speed);
+            rb.AddForce(targetDirection * moveSpeed);
         }
     }
 
-    public void InitializeStrategies()
+    private bool HandleWandering(out Vector2 direction)
     {
-        cellColor = CellStrategyFactory.CreateColor(colorType);
-        cellMembrane = CellStrategyFactory.CreateMembrane(membraneType);
+        direction = Vector2.zero;
+        wanderTimer += Time.fixedDeltaTime;
 
-        cellColor.Initialize(this);
-        cellMembrane.Initialize(this);
-    }
-
-    void Update()
-    {
-
+        float cycleTime = wanderTimer % 5f;
+        
+        if (cycleTime < 2f)
+        {
+            if (!isWandering)
+            {
+                isWandering = true;
+                currentWanderDirection = UnityEngine.Random.insideUnitCircle.normalized;
+            }
+            direction = currentWanderDirection;
+            return true;
+        }
+        
+        isWandering = false;
+        return false;
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -80,6 +107,9 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
         }
     }
 
+    public Size Size => size;
+    public float DetectionRange => detectionRange;
+    
     public CellSize CellSize => cellSize;
 
     public virtual void Consume(IEatable eatable)
@@ -114,7 +144,6 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
         {
             canBeEaten = rule.Invoke((consumer, this)) && canBeEaten;
         }
-
         return canBeEaten;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Interfaces;
 using Unity.Burst;
 using UnityEngine;
+using Zenject;
 
 namespace DefaultNamespace
 {
@@ -14,14 +15,22 @@ namespace DefaultNamespace
 
         public List<(IConsumer, IEatable)> EatRules { get; }
         
-        void Start()
+        [Inject] private NavigationSystem navigationSystem;
+
+        private void Start()
         {
             AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.CellSize - 1 == x.Item2.CellSize));
+            navigationSystem.RegisterEatable(this);
         }
-        
+
+        private void OnDestroy()
+        {
+            navigationSystem.UnregisterEatable(this);
+        }
+		
         public virtual void Eat(IConsumer consumer)
         {
-            gameObject.SetActive(false);
+            Destroy(gameObject);
         }
 
         public void AddEatRule(Predicate<(IConsumer, IEatable)> rule)
@@ -29,7 +38,6 @@ namespace DefaultNamespace
             eatRules.Add(rule);
         }
 
-        [BurstCompile]
         public bool CanBeEaten(IConsumer consumer)
         {
             bool canBeEaten = true;
