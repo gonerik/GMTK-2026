@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using DefaultNamespace;
 using DefaultNamespace.Zenject;
 using Interfaces;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine;
 using Zenject;
 
@@ -17,10 +12,10 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
     [SerializeField] private CellSize cellSize;
     [SerializeField] private CellColor colorType;
     [SerializeField] private CellMembrane membraneType;
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private float visionRadius = 1f;
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private float moveSpeed = 5f;
+    public float DetectionRange => detectionRange;
+    public CellSize CellSize => cellSize;
     
     private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
     private IColor cellColor;
@@ -39,7 +34,7 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
         AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.CellSize - 1 == x.Item2.CellSize));
         navigationSystem.RegisterConsumer(this);
         navigationSystem.RegisterEatable(this);
-        AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size - 1 == x.Item2.Size));
+        AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.CellSize - 1 == x.Item2.CellSize));
     }
 
     private void OnDestroy()
@@ -77,6 +72,15 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
         }
     }
 
+    public void InitializeStrategies()
+    {
+        cellColor = DefaultNamespace.CellStrategyFactory.CreateColor(colorType);
+        cellMembrane = DefaultNamespace.CellStrategyFactory.CreateMembrane(membraneType);
+
+        cellColor.Initialize(this);
+        cellMembrane.Initialize(this);
+    }
+    
     private bool HandleWandering(out Vector2 direction)
     {
         direction = Vector2.zero;
@@ -106,11 +110,6 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
             Consume(eatable);
         }
     }
-
-    public Size Size => size;
-    public float DetectionRange => detectionRange;
-    
-    public CellSize CellSize => cellSize;
 
     public virtual void Consume(IEatable eatable)
     {

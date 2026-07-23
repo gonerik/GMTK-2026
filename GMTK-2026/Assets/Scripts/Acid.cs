@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefaultNamespace.Zenject;
 using Interfaces;
-using Unity.Burst;
 using UnityEngine;
 using Zenject;
 
