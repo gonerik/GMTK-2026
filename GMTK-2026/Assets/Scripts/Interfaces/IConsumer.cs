@@ -3,5 +3,6 @@
     public interface IConsumer : IEntity
     {
         public void Consume(IEatable eatable);
+        public void Grow();
     }
 }

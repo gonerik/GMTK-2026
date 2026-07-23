@@ -17,7 +17,9 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
     [SerializeField] private Size size;
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private float moveForce = 5f;
-
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private float visionRadius = 1f;
+    
     private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
     private Vector2 moveDirection;
     
@@ -28,6 +30,7 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
         AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size < x.Item2.Size));
         navigationSystem.RegisterConsumer(this);
         navigationSystem.RegisterEatable(this);
+        AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size - 1 == x.Item2.Size));
     }
 
     private void OnDestroy()
@@ -48,6 +51,14 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.TryGetComponent(out IEatable eatable))
+        {
+            Consume(eatable);
+        }
+    }
+
     public Size Size => size;
     
     public virtual void Consume(IEatable eatable)
@@ -57,6 +68,11 @@ public class Cell : MonoBehaviour, IEatable, IConsumer
             return;
         }
         eatable.Eat(this);
+    }
+
+    public void Grow()
+    {
+        
     }
 
     public virtual void Eat(IConsumer consumer)

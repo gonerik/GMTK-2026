@@ -21,13 +21,14 @@ namespace DefaultNamespace
         private void Start()
         {
             navigationSystem.RegisterEatable(this);
+            AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size - 1 == x.Item2.Size));
         }
 
         private void OnDestroy()
         {
             navigationSystem.UnregisterEatable(this);
         }
-
+		
         public virtual void Eat(IConsumer consumer)
         {
             gameObject.SetActive(false);
