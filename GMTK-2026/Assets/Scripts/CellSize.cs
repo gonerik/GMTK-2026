@@ -1,6 +1,6 @@
 ﻿namespace DefaultNamespace
 {
-    public enum Size
+    public enum CellSize
     {
         Acid,
         Small,

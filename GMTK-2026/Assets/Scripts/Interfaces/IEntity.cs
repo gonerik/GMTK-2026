@@ -4,6 +4,6 @@ namespace Interfaces
 {
     public interface IEntity
     {
-        public Size Size { get; }
+        public CellSize CellSize { get; }
     }
 }

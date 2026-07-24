@@ -134,7 +134,7 @@ namespace DefaultNamespace.Zenject
                         continue;
                     }
                     
-                    canEatMatrix[i * eatableCount + j] = eatable.CanBeEaten(consumer);
+                    canEatMatrix[i * eatableCount + j] = consumer.CanBeEaten(eatable);
                 }
             }
 

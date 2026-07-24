@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefaultNamespace.GrowStrategy;
 using DefaultNamespace.Zenject;
 using Interfaces;
-using Unity.Burst;
 using UnityEngine;
 using Zenject;
 
@@ -10,18 +10,14 @@ namespace DefaultNamespace
 {
     public class Acid : MonoBehaviour, IEatable
     {
-        public Size Size => Size.Acid;
-        
-        private List<Predicate<(IConsumer, IEatable)>> eatRules = new List<Predicate<(IConsumer, IEatable)>>();
-
-        public List<(IConsumer, IEatable)> EatRules { get; }
+        [SerializeField] private GrowStrategyEnum growStrategy;
+        public CellSize CellSize => CellSize.Acid;
         
         [Inject] private NavigationSystem navigationSystem;
 
         private void Start()
         {
             navigationSystem.RegisterEatable(this);
-            AddEatRule(new Predicate<(IConsumer, IEatable)>((x) => x.Item1.Size - 1 == x.Item2.Size));
         }
 
         private void OnDestroy()
@@ -29,24 +25,15 @@ namespace DefaultNamespace
             navigationSystem.UnregisterEatable(this);
         }
 		
-        public virtual void Eat(IConsumer consumer)
+        public virtual IGrowStrategy Eat(IConsumer consumer)
         {
             Destroy(gameObject);
+            return CellStrategyFactory.CreateGrowStrategy(growStrategy);
         }
 
-        public void AddEatRule(Predicate<(IConsumer, IEatable)> rule)
+        public void Destroy()
         {
-            eatRules.Add(rule);
-        }
-
-        public bool CanBeEaten(IConsumer consumer)
-        {
-            bool canBeEaten = true;
-            foreach (var rule in eatRules)
-            {
-                canBeEaten = rule.Invoke((consumer, this)) && canBeEaten;
-            }
-            return canBeEaten;
+            Destroy(gameObject);
         }
     }
 }
