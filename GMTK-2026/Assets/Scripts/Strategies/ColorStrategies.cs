@@ -8,18 +8,17 @@ namespace DefaultNamespace.Strategies
         public void Initialize(Cell cell)
         {
             Debug.Log("Green Color Initialized");
-            cell.OnConsume += OnConsume;
+            cell.OnMate += OnMate;
         }
 
         public void Unsubscribe(Cell cell)
         {
-            cell.OnConsume -= OnConsume;
+            cell.OnMate -= OnMate;
         }
 
-        private void OnConsume(IEatable eatable)
+        private void OnMate(IMate partner)
         {
-            Debug.Log("Green Cell consumed something!");
-            eatable.Destroy();
+            Debug.Log("Green Cell mated with someone!");
         }
     }
 
@@ -28,17 +27,17 @@ namespace DefaultNamespace.Strategies
         public void Initialize(Cell cell)
         {
             Debug.Log("Yellow Color Initialized");
-            cell.OnEat += OnEat;
+            cell.OnMate += OnMate;
         }
 
         public void Unsubscribe(Cell cell)
         {
-            cell.OnEat -= OnEat;
+            cell.OnMate -= OnMate;
         }
 
-        private void OnEat(IConsumer consumer)
+        private void OnMate(IMate partner)
         {
-            Debug.Log("Yellow Cell was eaten!");
+            Debug.Log("Yellow Cell mated!");
         }
     }
 
@@ -47,14 +46,14 @@ namespace DefaultNamespace.Strategies
         public void Initialize(Cell cell)
         {
             Debug.Log("Red Color Initialized");
-            cell.OnConsume += HandleOnConsume;
+            cell.OnMate += HandleOnMate;
         }
 
         public void Unsubscribe(Cell cell)
         {
-            cell.OnConsume -= HandleOnConsume;
+            cell.OnMate -= HandleOnMate;
         }
 
-        private void HandleOnConsume(IEatable eatable) => Debug.Log("Red Cell consumed something!");
+        private void HandleOnMate(IMate partner) => Debug.Log("Red Cell mated!");
     }
 }

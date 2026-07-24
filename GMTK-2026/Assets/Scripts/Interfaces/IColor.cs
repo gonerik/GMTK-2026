@@ -1,8 +1,6 @@
 ﻿namespace Interfaces
 {
-    public interface IColor
+    public interface IColor : IFeature
     {
-        public void Initialize(Cell cell);
-        public void Unsubscribe(Cell cell);
     }
 }

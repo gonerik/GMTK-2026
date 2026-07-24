@@ -1,7 +1,7 @@
 ﻿using System;
-using DefaultNamespace.GrowStrategy;
 using DefaultNamespace.Strategies;
 using Interfaces;
+using MateStrategy;
 
 namespace DefaultNamespace
 {
@@ -36,17 +36,17 @@ namespace DefaultNamespace
                     throw new System.ArgumentOutOfRangeException(nameof(membraneType), membraneType, null);
             }
         }
-
-        public static IGrowStrategy CreateGrowStrategy(GrowStrategyEnum growStrategy)
+        
+        public static IMateStrategy CreateMateStrategy(MatingEnum matingEnum)
         {
-            switch (growStrategy)
+            switch (matingEnum)
             {
-                case GrowStrategyEnum.Divide:
-                    return new DivideGrowStrategy();
-                case GrowStrategyEnum.Grow:
-                    return new EnlargeStrategy();
+                case MatingEnum.Acid: return new DefaultMatingStrategy();
+                case MatingEnum.Default: return new DefaultMatingStrategy();
+                case MatingEnum.Agressive: return new AgressiveStrategy();
+                case MatingEnum.Horny: return new HornyStrategy();
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(growStrategy), growStrategy, null);
+                    throw new System.ArgumentOutOfRangeException(nameof(matingEnum), matingEnum, null);
             }
         }
     }

@@ -8,15 +8,15 @@ namespace DefaultNamespace.Strategies
         public void Initialize(Cell cell)
         {
             Debug.Log("Default Membrane Initialized");
-            cell.OnEat += OnEat;
+            cell.OnMate += OnMate;
         }
 
         public void Unsubscribe(Cell cell)
         {
-            cell.OnEat -= OnEat;
+            cell.OnMate -= OnMate;
         }
 
-        private void OnEat(IConsumer consumer) => Debug.Log("Default Membrane: I'm being eaten!");
+        private void OnMate(IMate partner) => Debug.Log("Default Membrane: Mated!");
     }
 
     public class SpikeMembrane : IMembrane
@@ -24,15 +24,15 @@ namespace DefaultNamespace.Strategies
         public void Initialize(Cell cell)
         {
             Debug.Log("Spike Membrane Initialized");
-            cell.OnEat += OnEat;
+            cell.OnMate += OnMate;
         }
 
         public void Unsubscribe(Cell cell)
         {
-            cell.OnEat -= OnEat;
+            cell.OnMate -= OnMate;
         }
 
-        private void OnEat(IConsumer consumer) => Debug.Log("Spike Membrane: Ouch! You ate spikes!");
+        private void OnMate(IMate partner) => Debug.Log("Spike Membrane: Mated!");
     }
 
     public class FluidMembrane : IMembrane
@@ -40,14 +40,14 @@ namespace DefaultNamespace.Strategies
         public void Initialize(Cell cell)
         {
             Debug.Log("Fluid Membrane Initialized");
-            cell.OnConsume += OnConsume;
+            cell.OnMate += OnMate;
         }
 
         public void Unsubscribe(Cell cell)
         {
-            cell.OnConsume -= OnConsume;
+            cell.OnMate -= OnMate;
         }
 
-        private void OnConsume(IEatable eatable) => Debug.Log("Fluid Membrane: Slorp!");
+        private void OnMate(IMate partner) => Debug.Log("Fluid Membrane: Mated!");
     }
 }

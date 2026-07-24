@@ -1,0 +1,18 @@
+﻿using DefaultNamespace;
+using MateStrategy;
+using UnityEngine;
+using Zenject;
+
+[CreateAssetMenu(fileName = "MatingInstaller", menuName = "Installers/MatingInstaller")]
+public class MatingInstaller : ScriptableObjectInstaller<MatingInstaller>
+{
+    [SerializeField] private MatingConfig matingConfig;
+    [SerializeField] private GameObject cellPrefab;
+
+    public override void InstallBindings()
+    {
+        Container.BindInstance(matingConfig).AsSingle();
+        Container.BindFactory<Cell, Cell.Factory>().FromComponentInNewPrefab(cellPrefab);
+        Container.BindInterfacesAndSelfTo<MatingService>().AsSingle().WithArguments(matingConfig,cellPrefab).NonLazy();
+    }
+}
