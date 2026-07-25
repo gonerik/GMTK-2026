@@ -449,7 +449,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 11
+  m_Priority: 10
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -537,6 +537,8 @@ MonoBehaviour:
   _scriptableObjectInstallers:
   - {fileID: 11400000, guid: f77d6ddc31f04024cad83d152a5410cf, type: 2}
   - {fileID: 11400000, guid: 55b3f73d0fc24fe4ab4e7bc4c5d6574d, type: 2}
+  - {fileID: 11400000, guid: 7013a380912f3994998f6689166478d6, type: 2}
+  - {fileID: 11400000, guid: 3384d66f52a9f8b41beb5b2491ac859c, type: 2}
   _monoInstallers:
   - {fileID: 416343247}
   - {fileID: 416343250}
@@ -684,6 +686,8 @@ GameObject:
   - component: {fileID: 467037186}
   - component: {fileID: 467037187}
   - component: {fileID: 467037188}
+  - component: {fileID: 467037190}
+  - component: {fileID: 467037189}
   m_Layer: 0
   m_Name: PetriBackgorund
   m_TagString: Untagged
@@ -748,7 +752,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.2830189, g: 0.2830189, b: 0.2830189, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -817,6 +821,54 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!114 &467037189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467037185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91e49d0b458b4d2bb31ada3c22f860af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ageRate: 0.5
+--- !u!58 &467037190
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467037185}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &470538422
 GameObject:
   m_ObjectHideFlags: 0
@@ -1088,7 +1140,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 11
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1113,7 +1165,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -35, y: -20, z: -10}
+  m_LocalPosition: {x: 0, y: -60, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1753,7 +1805,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.2830189, g: 0.2830189, b: 0.2830189, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1834,6 +1886,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91e49d0b458b4d2bb31ada3c22f860af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ageRate: 1
 --- !u!58 &1320202529
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1863,12 +1916,17 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!1 &1354497653 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5069225946725762616, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+  m_PrefabInstance: {fileID: 1384386922}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1384386922
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1883,11 +1941,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.14
+      value: 5.3
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.77
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1924,13 +1982,36 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5069225946725762616, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1384386927}
   m_SourcePrefab: {fileID: 100100000, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
 --- !u!4 &1384386923 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
   m_PrefabInstance: {fileID: 1384386922}
   m_PrefabAsset: {fileID: 0}
+--- !u!58 &1384386924 stripped
+CircleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 4966866317419671225, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+  m_PrefabInstance: {fileID: 1384386922}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1384386927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354497653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6dc79ba97f24c0da82b8428ee188406, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _collider: {fileID: 1384386924}
+  _spriteRenderer: {fileID: 0}
+  _uiImage: {fileID: 0}
 --- !u!1 &1393676081
 GameObject:
   m_ObjectHideFlags: 0
@@ -1973,6 +2054,8 @@ GameObject:
   - component: {fileID: 1422336348}
   - component: {fileID: 1422336349}
   - component: {fileID: 1422336350}
+  - component: {fileID: 1422336352}
+  - component: {fileID: 1422336351}
   m_Layer: 0
   m_Name: PetriBackgorund
   m_TagString: Untagged
@@ -2037,7 +2120,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.2830189, g: 0.2830189, b: 0.2830189, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2106,6 +2189,54 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!58 &1422336351
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422336347}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
+--- !u!114 &1422336352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422336347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91e49d0b458b4d2bb31ada3c22f860af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ageRate: 1.5
 --- !u!1 &1636493339
 GameObject:
   m_ObjectHideFlags: 0
@@ -2433,7 +2564,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 34
-    OrthographicSize: 10
+    OrthographicSize: 11
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
