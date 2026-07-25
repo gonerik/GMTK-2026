@@ -1460,6 +1460,8 @@ GameObject:
   - component: {fileID: 707479660}
   - component: {fileID: 707479659}
   - component: {fileID: 707479662}
+  - component: {fileID: 707479663}
+  - component: {fileID: 707479664}
   m_Layer: 5
   m_Name: CameraSwitchButton2
   m_TagString: Untagged
@@ -1581,6 +1583,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraToSwitch: 1
+--- !u!114 &707479663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707479656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d29b5910e734a16966624f7bfd58d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 293455846}
+--- !u!58 &707479664
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707479656}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 105
 --- !u!1 &831670508
 GameObject:
   m_ObjectHideFlags: 0
@@ -1941,11 +1991,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1992,11 +2042,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
   m_PrefabInstance: {fileID: 1384386922}
   m_PrefabAsset: {fileID: 0}
---- !u!58 &1384386924 stripped
-CircleCollider2D:
-  m_CorrespondingSourceObject: {fileID: 4966866317419671225, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
-  m_PrefabInstance: {fileID: 1384386922}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1384386927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2009,9 +2054,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6dc79ba97f24c0da82b8428ee188406, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _collider: {fileID: 1384386924}
-  _spriteRenderer: {fileID: 0}
-  _uiImage: {fileID: 0}
 --- !u!1 &1393676081
 GameObject:
   m_ObjectHideFlags: 0
@@ -2326,11 +2368,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -8.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2369,8 +2411,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
---- !u!4 &1754330634 stripped
-Transform:
+--- !u!224 &1754330634 stripped
+RectTransform:
   m_CorrespondingSourceObject: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
   m_PrefabInstance: {fileID: 1754330633}
   m_PrefabAsset: {fileID: 0}
@@ -2387,6 +2429,8 @@ GameObject:
   - component: {fileID: 1836610826}
   - component: {fileID: 1836610825}
   - component: {fileID: 1836610828}
+  - component: {fileID: 1836610829}
+  - component: {fileID: 1836610830}
   m_Layer: 5
   m_Name: CameraSwitchButton1
   m_TagString: Untagged
@@ -2508,6 +2552,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraToSwitch: 0
+--- !u!114 &1836610829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1836610822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d29b5910e734a16966624f7bfd58d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 1944804235}
+--- !u!58 &1836610830
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1836610822}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 105
 --- !u!1 &1944804233
 GameObject:
   m_ObjectHideFlags: 0
@@ -2612,6 +2704,8 @@ GameObject:
   - component: {fileID: 2033554299}
   - component: {fileID: 2033554298}
   - component: {fileID: 2033554301}
+  - component: {fileID: 2033554302}
+  - component: {fileID: 2033554303}
   m_Layer: 5
   m_Name: CameraSwitchButton3
   m_TagString: Untagged
@@ -2733,6 +2827,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraToSwitch: 2
+--- !u!114 &2033554302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2033554295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d29b5910e734a16966624f7bfd58d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 15105030}
+--- !u!58 &2033554303
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2033554295}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 105
 --- !u!1001 &2054994225
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2747,11 +2889,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.16
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalPosition.z
