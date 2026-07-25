@@ -5,6 +5,7 @@ using Cell.Visual;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
 using DefaultNamespace.Zenject;
+using DG.Tweening;
 using Energy;
 using Interfaces;
 using MateStrategy;
@@ -19,7 +20,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
     [SerializeField] private CellColor colorType;
     [SerializeField] private CellMembrane membraneType;
     [SerializeField] private float detectionRange = 10f;
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private GrowStrategyEnum growStrategy;
     [SerializeField] private MatingEnum matingEnum;
     private IColor cellColor;
@@ -32,6 +33,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
 
     private bool isInitializedByFactory;
     private bool isWandering;
+    private SpriteRenderer spriteRenderer;
     [Inject] private CellLifetimeConfig lifetimeConfig;
     [Inject] private MatingService matingService;
     private IMateStrategy matiStrategy;
@@ -83,8 +85,18 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.TryGetComponent(out IMate partner))
+        {
             if (!IsMating && !partner.IsMating)
+            {
                 Mate(partner);
+            }
+        }
+        
+        if (spriteRenderer != null)
+        {
+            Vector3 startLocalScale = spriteRenderer.transform.localScale;
+            spriteRenderer.transform.DOScale(startLocalScale * 0.9f, 0.1f).SetEase(Ease.InCubic).OnComplete(() => spriteRenderer.transform.DOScale(startLocalScale, 0.1f).SetEase(Ease.InBack));
+        }
     }
 
     public float DetectionRange => detectionRange;
@@ -125,9 +137,9 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
     {
         return new AIView
         {
-            CellSize = CellSize,
+            CellSize = this.CellSize,
             MatingEnum = GetMatingEnum(),
-            Deviation = DeviationEnum.Default
+            Deviation = this.Deviation
         };
     }
 
@@ -137,7 +149,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
     }
 
     public MatingEnum MatingEnum => matingEnum;
-    public DeviationEnum Deviation => DeviationEnum.Default;
+    public DeviationEnum Deviation { get; private set; }
 
     public Transform GetTransform()
     {
@@ -159,10 +171,20 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
         Destroy();
     }
 
-    public void Initialize(MatingEnum matingEnum, CellSize cellSize, Vector3 position)
+    public void Initialize(MatingEnum matingEnum, CellSize cellSize, DeviationEnum deviationEnum, Vector3 position)
     {
         this.matingEnum = matingEnum;
         this.cellSize = cellSize;
+        this.Deviation = deviationEnum;
+        if(deviationEnum == DeviationEnum.Red)
+        {
+            Deviation = DeviationEnum.Default;
+        }
+
+        if (deviationEnum == DeviationEnum.Blue)
+        {
+            moveSpeed = 5f;
+        }
         transform.position = position;
         isInitializedByFactory = true;
         InitializeStrategies();
@@ -180,7 +202,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
         cellColor.Initialize(this);
         cellMembrane.Initialize(this);
         matiStrategy.Initialize(this);
-        visualAssembler.Reassemble(this);
+        spriteRenderer = visualAssembler.Reassemble(this);
 
         OnReinitialized?.Invoke(this);
     }
@@ -190,7 +212,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
         this.ageRate = ageRate;
         Debug.Log("Age rate set to " + ageRate);
     }
-
+    
     private void UnsubscribeFromStrategies()
     {
         cellColor?.Unsubscribe(this);

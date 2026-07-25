@@ -16,6 +16,7 @@ namespace MateStrategy
         
         [Inject] private CellUnit.Factory cellFactory;
         [Inject] private RedCell.Factory redCellFactory;
+        [Inject] private MatingProbabilities matingProbabilities;
 
         private int mutationChance;
         private static readonly int HornyAdditionalSpawnChance = 50;
@@ -98,13 +99,25 @@ namespace MateStrategy
         private void HandleMutationAndCreation(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos)
         {
             int mutationProbability = UnityEngine.Random.Range(0, 100);
-            if (mutationProbability <= mutationChance)
+            int yellowMutationChance = matingProbabilities.GetProbability(DeviationEnum.Yellow) + mutationChance;
+            int redMutationChance = matingProbabilities.GetProbability(DeviationEnum.Red) + mutationChance;
+            int blueMutationChance = matingProbabilities.GetProbability(DeviationEnum.Blue) + mutationChance;
+            
+            if (mutationProbability <= blueMutationChance)
+            {
+                cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Blue, spawnPos);
+            }
+            else if (mutationProbability <= yellowMutationChance)
+            {
+                cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Yellow, spawnPos);
+            }
+            else if (mutationProbability <= redMutationChance)
             {
                 redCellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
             }
             else
             {
-                cellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
+                cellFactory.Create().Initialize(resultEnum, newSize,  DeviationEnum.Default, spawnPos);
             }
         }
 
