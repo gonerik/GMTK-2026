@@ -2668,6 +2668,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8540203650371473747, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8798106582807650138, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
       propertyPath: orthographic
       value: 1
@@ -2684,6 +2688,10 @@ PrefabInstance:
       propertyPath: m_RaycastTarget
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9179390668684416749, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
+      propertyPath: cellPrefab
+      value: 
+      objectReference: {fileID: 811778512856058269, guid: b4a9792b10c12be42bdd65a647deb079, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
