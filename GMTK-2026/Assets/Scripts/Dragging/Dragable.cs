@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CoreLoop.Interfaces;
 using GameStateMachine.States;
 using Interfaces;
@@ -6,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace Dragging
 {
@@ -41,6 +43,12 @@ namespace Dragging
         {
             _mainCamera = Camera.main;
             _canvas = Object.FindAnyObjectByType<Canvas>();
+        }
+
+        private void Start()
+        {
+            _collider = GetComponent<Collider2D>();
+            _uiImage = GetComponent<Image>();
         }
 
         private void OnEnable()
@@ -116,6 +124,7 @@ namespace Dragging
         {
             _isDragging = true;
             _collider.enabled = false;
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             
             // Sync UI Image size with SpriteRenderer's visual size
             if (_spriteRenderer != null && _uiImage != null)
@@ -148,7 +157,7 @@ namespace Dragging
                             goto ParentStep;
                         }
                         
-                        _uiImage.rectTransform.sizeDelta = worldSize * unitsToPixels / 2f;
+                        _uiImage.rectTransform.sizeDelta = worldSize * unitsToPixels * 10;
                     }
                     else
                     {
