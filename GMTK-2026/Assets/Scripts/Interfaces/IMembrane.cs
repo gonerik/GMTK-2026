@@ -1,8 +1,6 @@
 ﻿namespace Interfaces
 {
-    public interface IMembrane
+    public interface IMembrane : IFeature
     {
-        public void Initialize(Cell cell);
-        public void Unsubscribe(Cell cell);
     }
 }

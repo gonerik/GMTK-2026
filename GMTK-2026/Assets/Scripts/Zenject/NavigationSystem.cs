@@ -13,10 +13,9 @@ namespace DefaultNamespace.Zenject
 {
     public class NavigationSystem : IInitializable, IDisposable
     {
-        public Dictionary<IConsumer, IEatable> targets = new Dictionary<IConsumer, IEatable>();
+        public Dictionary<ITarget, ITarget> targets = new Dictionary<ITarget, ITarget>();
         
-        private List<IEatable> _eatables = new List<IEatable>();
-        private List<IConsumer> _consumers = new List<IConsumer>();
+        private List<ITarget> _targets = new List<ITarget>();
         private CancellationTokenSource _cts;
 
         public void Initialize()
@@ -31,21 +30,21 @@ namespace DefaultNamespace.Zenject
             _cts?.Dispose();
         }
 
-        public void RegisterEatable(IEatable eatable)
+        public void RegisterTarget(ITarget target)
         {
-            if (!_eatables.Contains(eatable))
-                _eatables.Add(eatable);
+            if (!_targets.Contains(target))
+                _targets.Add(target);
         }
 
-        public void UnregisterEatable(IEatable eatable)
+        public void UnregisterTarget(ITarget target)
         {
-            _eatables.Remove(eatable);
+            _targets.Remove(target);
             
             // Remove from targets dictionary
-            List<IConsumer> keysToRemove = new List<IConsumer>();
+            List<ITarget> keysToRemove = new List<ITarget>();
             foreach (var pair in targets)
             {
-                if (pair.Value == eatable)
+                if (pair.Value == target || pair.Key == target)
                 {
                     keysToRemove.Add(pair.Key);
                 }
@@ -55,18 +54,6 @@ namespace DefaultNamespace.Zenject
             {
                 targets.Remove(key);
             }
-        }
-
-        public void RegisterConsumer(IConsumer consumer)
-        {
-            if (!_consumers.Contains(consumer))
-                _consumers.Add(consumer);
-        }
-
-        public void UnregisterConsumer(IConsumer consumer)
-        {
-            _consumers.Remove(consumer);
-            targets.Remove(consumer);
         }
 
         private async UniTaskVoid UpdateLoop(CancellationToken token)
@@ -80,61 +67,43 @@ namespace DefaultNamespace.Zenject
 
         private async UniTask UpdateTargets(CancellationToken token)
         {
-            if (_consumers.Count == 0 || _eatables.Count == 0)
+            if (_targets.Count < 2)
             {
                 targets.Clear();
                 return;
             }
 
             // Capture data on main thread
-            int consumerCount = _consumers.Count;
-            int eatableCount = _eatables.Count;
+            var currentTargets = new List<ITarget>(_targets);
+            int targetCount = currentTargets.Count;
             
-            NativeArray<Vector2> consumerPositions = new NativeArray<Vector2>(consumerCount, Allocator.Persistent);
-            NativeArray<float> detectionRanges = new NativeArray<float>(consumerCount, Allocator.Persistent);
-            NativeArray<Vector2> eatablePositions = new NativeArray<Vector2>(eatableCount, Allocator.Persistent);
-            NativeArray<int> targetIndices = new NativeArray<int>(consumerCount, Allocator.Persistent);
+            NativeArray<Vector2> targetPositions = new NativeArray<Vector2>(targetCount, Allocator.Persistent);
+            NativeArray<float> detectionRanges = new NativeArray<float>(targetCount, Allocator.Persistent);
+            NativeArray<int> targetIndices = new NativeArray<int>(targetCount, Allocator.Persistent);
 
-            // We still need to check CanBeEaten. 
-            // Since it uses Predicates, we can't do it inside Burst.
-            // But we can pre-calculate a bitmask or a 2D array of "who can eat whom".
-            NativeArray<bool> canEatMatrix = new NativeArray<bool>(consumerCount * eatableCount, Allocator.Persistent);
+            NativeArray<bool> canTargetMatrix = new NativeArray<bool>(targetCount * targetCount, Allocator.Persistent);
 
-            for (int j = 0; j < eatableCount; j++)
+            for (int i = 0; i < targetCount; i++)
             {
-                var eatable = _eatables[j];
-                if (eatable is MonoBehaviour emb && emb != null)
-                {
-                    eatablePositions[j] = emb.transform.position;
-                }
-                else
-                {
-                    eatablePositions[j] = Vector2.zero;
-                }
+                var target = currentTargets[i];
+                targetPositions[i] = target.GetTargetPosition();
+                detectionRanges[i] = target.DetectionRange;
+                targetIndices[i] = -1;
             }
 
-            for (int i = 0; i < consumerCount; i++)
+            for (int i = 0; i < targetCount; i++)
             {
-                var consumer = _consumers[i];
-                if (consumer is not MonoBehaviour cmb || cmb == null)
+                var t1 = currentTargets[i];
+                for (int j = 0; j < targetCount; j++)
                 {
-                    consumerPositions[i] = Vector2.zero;
-                    continue;
-                }
-                consumerPositions[i] = cmb.transform.position;
-                detectionRanges[i] = consumer.DetectionRange;
-                targetIndices[i] = -1;
-
-                for (int j = 0; j < eatableCount; j++)
-                {
-                    var eatable = _eatables[j];
-                    if (eatable == (IEatable)consumer || eatablePositions[j] == Vector2.zero)
+                    var t2 = currentTargets[j];
+                    if (t1 == t2 || targetPositions[j] == Vector2.zero)
                     {
-                        canEatMatrix[i * eatableCount + j] = false;
+                        canTargetMatrix[i * targetCount + j] = false;
                         continue;
                     }
                     
-                    canEatMatrix[i * eatableCount + j] = consumer.CanBeEaten(eatable);
+                    canTargetMatrix[i * targetCount + j] = t1.CanTarget(t2);
                 }
             }
 
@@ -143,61 +112,67 @@ namespace DefaultNamespace.Zenject
             {
                 var job = new CalculateTargetsJob
                 {
-                    ConsumerPositions = consumerPositions,
+                    TargetPositions = targetPositions,
                     DetectionRanges = detectionRanges,
-                    EatablePositions = eatablePositions,
-                    CanEatMatrix = canEatMatrix,
-                    EatableCount = eatableCount,
+                    CanTargetMatrix = canTargetMatrix,
+                    TargetCount = targetCount,
                     TargetIndices = targetIndices
                 };
-                job.Schedule(consumerCount, 64).Complete();
+                job.Schedule(targetCount, 64).Complete();
             }, cancellationToken: token);
 
             // Back to main thread to update dictionary
-            Dictionary<IConsumer, IEatable> newTargets = new Dictionary<IConsumer, IEatable>();
-            for (int i = 0; i < consumerCount; i++)
+            Dictionary<ITarget, ITarget> newTargets = new Dictionary<ITarget, ITarget>();
+            for (int i = 0; i < targetCount; i++)
             {
                 int targetIndex = targetIndices[i];
                 if (targetIndex != -1)
                 {
-                    newTargets[_consumers[i]] = _eatables[targetIndex];
+                    var source = currentTargets[i];
+                    var target = currentTargets[targetIndex];
+
+                    // Check if they are still registered
+                    if (_targets.Contains(source) && _targets.Contains(target))
+                    {
+                        newTargets[source] = target;
+                    }
                 }
             }
             targets = newTargets;
 
-            consumerPositions.Dispose();
+            targetPositions.Dispose();
             detectionRanges.Dispose();
-            eatablePositions.Dispose();
-            canEatMatrix.Dispose();
+            canTargetMatrix.Dispose();
             targetIndices.Dispose();
         }
 
         [BurstCompile]
         private struct CalculateTargetsJob : IJobParallelFor
         {
-            [ReadOnly] public NativeArray<Vector2> ConsumerPositions;
+            [ReadOnly] public NativeArray<Vector2> TargetPositions;
             [ReadOnly] public NativeArray<float> DetectionRanges;
-            [ReadOnly] public NativeArray<Vector2> EatablePositions;
-            [ReadOnly] public NativeArray<bool> CanEatMatrix;
-            public int EatableCount;
+            [ReadOnly] public NativeArray<bool> CanTargetMatrix;
+            public int TargetCount;
             public NativeArray<int> TargetIndices;
 
             public void Execute(int index)
             {
-                Vector2 consumerPos = ConsumerPositions[index];
-                if (consumerPos == Vector2.zero) return;
+                Vector2 targetPos = TargetPositions[index];
+                if (targetPos == Vector2.zero) return;
 
                 float detectionRange = DetectionRanges[index];
+                if (detectionRange <= 0) return;
+
                 float detectionRangeSq = detectionRange * detectionRange;
 
                 int closestIndex = -1;
                 float minDistanceSq = float.MaxValue;
 
-                for (int j = 0; j < EatableCount; j++)
+                for (int j = 0; j < TargetCount; j++)
                 {
-                    if (!CanEatMatrix[index * EatableCount + j]) continue;
+                    if (!CanTargetMatrix[index * TargetCount + j]) continue;
 
-                    float distSq = (EatablePositions[j] - consumerPos).sqrMagnitude;
+                    float distSq = (TargetPositions[j] - targetPos).sqrMagnitude;
                     if (distSq <= detectionRangeSq && distSq < minDistanceSq)
                     {
                         minDistanceSq = distSq;
