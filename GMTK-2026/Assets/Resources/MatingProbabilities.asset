@@ -13,4 +13,10 @@ MonoBehaviour:
   m_Name: MatingProbabilities
   m_EditorClassIdentifier: 
   Probabilities:
-    _serializedList: []
+    _serializedList:
+    - Key: 1
+      Value: -20
+    - Key: 2
+      Value: -50
+    - Key: 3
+      Value: -100
