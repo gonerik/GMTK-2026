@@ -28,8 +28,6 @@ namespace UI
 
         private void OnEnergyChanged(int percent01)
         {
-            healthBarFill.fillAmount = percent01;
-
             string label = percent01 + "%";
             textOnFilled.text = label;
             textOnEmpty.text = label;
