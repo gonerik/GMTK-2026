@@ -13,14 +13,54 @@ MonoBehaviour:
   m_Name: CellLifetimeConfig
   m_EditorClassIdentifier: 
   MatingLifetimeAddition:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value: 0
+    - Key: 2
+      Value: 10
+    - Key: 3
+      Value: 25
   SizeLifetimeAddition:
-    _serializedList: []
+    _serializedList:
+    - Key: 1
+      Value: 20
+    - Key: 2
+      Value: 40
+    - Key: 3
+      Value: 60
   DeviationLifetimeAddition:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value: 0
+    - Key: 1
+      Value: 60
+    - Key: 2
+      Value: 10
+    - Key: 3
+      Value: 30
   MatingEnergyGainAddition:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value: 0
+    - Key: 2
+      Value: 10
+    - Key: 3
+      Value: 15
   SizeEnergyGainAddition:
-    _serializedList: []
+    _serializedList:
+    - Key: 1
+      Value: 5
+    - Key: 2
+      Value: 10
+    - Key: 3
+      Value: 15
   DeviationEnergyGainAddition:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value: 0
+    - Key: 1
+      Value: -10
+    - Key: 2
+      Value: 20
+    - Key: 3
+      Value: 5
