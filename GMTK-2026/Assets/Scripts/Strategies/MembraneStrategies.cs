@@ -5,13 +5,13 @@ namespace DefaultNamespace.Strategies
 {
     public class DefaultMembrane : IMembrane
     {
-        public void Initialize(Cell cell)
+        public void Initialize(CellUnit cell)
         {
             Debug.Log("Default Membrane Initialized");
             cell.OnMate += OnMate;
         }
 
-        public void Unsubscribe(Cell cell)
+        public void Unsubscribe(CellUnit cell)
         {
             cell.OnMate -= OnMate;
         }
@@ -21,13 +21,13 @@ namespace DefaultNamespace.Strategies
 
     public class SpikeMembrane : IMembrane
     {
-        public void Initialize(Cell cell)
+        public void Initialize(CellUnit cell)
         {
             Debug.Log("Spike Membrane Initialized");
             cell.OnMate += OnMate;
         }
 
-        public void Unsubscribe(Cell cell)
+        public void Unsubscribe(CellUnit cell)
         {
             cell.OnMate -= OnMate;
         }
@@ -37,13 +37,13 @@ namespace DefaultNamespace.Strategies
 
     public class FluidMembrane : IMembrane
     {
-        public void Initialize(Cell cell)
+        public void Initialize(CellUnit cell)
         {
             Debug.Log("Fluid Membrane Initialized");
             cell.OnMate += OnMate;
         }
 
-        public void Unsubscribe(Cell cell)
+        public void Unsubscribe(CellUnit cell)
         {
             cell.OnMate -= OnMate;
         }

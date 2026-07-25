@@ -74,7 +74,8 @@ namespace DefaultNamespace.Zenject
             }
 
             // Capture data on main thread
-            int targetCount = _targets.Count;
+            var currentTargets = new List<ITarget>(_targets);
+            int targetCount = currentTargets.Count;
             
             NativeArray<Vector2> targetPositions = new NativeArray<Vector2>(targetCount, Allocator.Persistent);
             NativeArray<float> detectionRanges = new NativeArray<float>(targetCount, Allocator.Persistent);
@@ -84,7 +85,7 @@ namespace DefaultNamespace.Zenject
 
             for (int i = 0; i < targetCount; i++)
             {
-                var target = _targets[i];
+                var target = currentTargets[i];
                 targetPositions[i] = target.GetTargetPosition();
                 detectionRanges[i] = target.DetectionRange;
                 targetIndices[i] = -1;
@@ -92,10 +93,10 @@ namespace DefaultNamespace.Zenject
 
             for (int i = 0; i < targetCount; i++)
             {
-                var t1 = _targets[i];
+                var t1 = currentTargets[i];
                 for (int j = 0; j < targetCount; j++)
                 {
-                    var t2 = _targets[j];
+                    var t2 = currentTargets[j];
                     if (t1 == t2 || targetPositions[j] == Vector2.zero)
                     {
                         canTargetMatrix[i * targetCount + j] = false;
@@ -127,7 +128,14 @@ namespace DefaultNamespace.Zenject
                 int targetIndex = targetIndices[i];
                 if (targetIndex != -1)
                 {
-                    newTargets[_targets[i]] = _targets[targetIndex];
+                    var source = currentTargets[i];
+                    var target = currentTargets[targetIndex];
+
+                    // Check if they are still registered
+                    if (_targets.Contains(source) && _targets.Contains(target))
+                    {
+                        newTargets[source] = target;
+                    }
                 }
             }
             targets = newTargets;

@@ -9,7 +9,7 @@ namespace DefaultNamespace
     public class CellVisualConfig : ScriptableObjectInstaller
     {
         [SerializeField] private SerializedDictionary<CellSize, float> cellSizeModifiers;
-        [SerializeField] private SerializedDictionary<MatingEnum, Sprite> matingModifiers;
+        [SerializeField] private SerializedDictionary<MatingEnum, SerializedDictionary<CellSize, SpriteRenderer>> matingModifiers;
         
         public override void InstallBindings()
         {
@@ -17,6 +17,6 @@ namespace DefaultNamespace
         }
         
         public float GetCellSizeModifier(CellSize cellSize) => cellSizeModifiers[cellSize];
-        public Sprite GetCellSprite(MatingEnum matingEnum) => matingModifiers[matingEnum];
+        public SpriteRenderer GetCellSprite(MatingEnum matingEnum, CellSize cellSize) => matingModifiers[matingEnum][cellSize];
     }
 }

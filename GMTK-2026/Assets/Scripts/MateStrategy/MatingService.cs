@@ -14,10 +14,11 @@ namespace MateStrategy
         private MatingConfig matingConfig;
         private GameObject cellPrefab;
         
-        [Inject] private Cell.Factory cellFactory;
+        [Inject] private CellUnit.Factory cellFactory;
         [Inject] private RedCell.Factory redCellFactory;
 
         private int mutationChance;
+        private static readonly int HornyAdditionalSpawnChance = 50;
 
         [Inject]
         public MatingService(MatingConfig matingConfig, GameObject cellPrefab)
@@ -53,6 +54,11 @@ namespace MateStrategy
                 return;
             }
 
+            if (mate1.CellSize == CellSize.Large || mate2.CellSize == CellSize.Large)
+            {
+                return;
+            }
+
             mate1.IsMating = true;
             mate2.IsMating = true;
             
@@ -61,7 +67,36 @@ namespace MateStrategy
             MatingEnum resultEnum = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
             CellSize newSize = mate1.CellSize + 1;
             Vector3 spawnPos = (mate1.GetTargetPosition() + mate2.GetTargetPosition()) / 2f;
-            
+
+            if (mate1.GetMatingEnum() == MatingEnum.Horny)
+            {
+                int additionalSpawnProbability = UnityEngine.Random.Range(0, 100);
+                if (additionalSpawnProbability <= HornyAdditionalSpawnChance)
+                {
+                    MatingEnum resultEnumHorny1 = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
+                    Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
+                    HandleMutationAndCreation(resultEnumHorny1, mate1.CellSize, spawnPos + spawnOffset);
+                }
+            }
+            if(mate2.GetMatingEnum() == MatingEnum.Horny)
+            {
+                int additionalSpawnProbability = UnityEngine.Random.Range(0, 100);
+                if (additionalSpawnProbability <= HornyAdditionalSpawnChance)
+                {
+                    MatingEnum resultEnumHorny2 = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
+                    Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
+                    HandleMutationAndCreation(resultEnumHorny2, mate2.CellSize, spawnPos + spawnOffset);
+                }
+            }
+            HandleMutationAndCreation(resultEnum, newSize, spawnPos);
+
+
+            mate1.Destroy();
+            mate2.Destroy();
+        }
+
+        private void HandleMutationAndCreation(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos)
+        {
             int mutationProbability = UnityEngine.Random.Range(0, 100);
             if (mutationProbability <= mutationChance)
             {
@@ -71,10 +106,6 @@ namespace MateStrategy
             {
                 cellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
             }
-            
-
-            mate1.Destroy();
-            mate2.Destroy();
         }
 
         private MatingEnum DetermineResultingEnum(MatingEnum parent1, MatingEnum parent2)

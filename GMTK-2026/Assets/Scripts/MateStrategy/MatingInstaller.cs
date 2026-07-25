@@ -13,7 +13,7 @@ public class MatingInstaller : ScriptableObjectInstaller<MatingInstaller>
     public override void InstallBindings()
     {
         Container.BindInstance(matingConfig).AsSingle();
-        Container.BindFactory<Cell, Cell.Factory>().FromComponentInNewPrefab(cellPrefab);
+        Container.BindFactory<CellUnit, CellUnit.Factory>().FromComponentInNewPrefab(cellPrefab);
         Container.BindFactory<RedCell, RedCell.Factory>().FromComponentInNewPrefab(redCellPrefab);
         Container.BindInterfacesAndSelfTo<MatingService>().AsSingle().WithArguments(matingConfig,cellPrefab).NonLazy();
     }

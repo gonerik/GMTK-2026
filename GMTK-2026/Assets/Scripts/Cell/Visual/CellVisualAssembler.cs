@@ -1,38 +1,31 @@
-﻿using System;
+﻿using DefaultNamespace;
 using DG.Tweening;
 using Interfaces;
 using UnityEngine;
 using Zenject;
 
-namespace DefaultNamespace
+namespace Cell.Visual
 {
-    public class CellVisualAssembler : MonoBehaviour
+    public class CellVisualAssembler
     {
         [Inject] private CellVisualConfig config;
-        
-        private IVisualyConfigurable cell;
-        private SpriteRenderer spriteRenderer;
-        
-        
-        private void Awake()
-        {
-            cell = GetComponent<IVisualyConfigurable>();
-            spriteRenderer = GetComponent<SpriteRenderer>();
-        }
 
-        private void Start()
-        {
-            cell.OnReinitialized += Reassemble;
-            Reassemble(cell);
-        }
-
-        private void Reassemble(IVisualyConfigurable cell)
+        public void Reassemble(IVisualyConfigurable cell)
         {
             cell.GetTransform().localScale = Vector3.zero;
-            spriteRenderer.sprite = config.GetCellSprite(cell.MatingEnum);
+
+            foreach (Transform child in cell.GetTransform())
+            {
+                UnityEngine.Object.Destroy(child.gameObject);
+            }
+            
+            SpriteRenderer spritePrefab = config.GetCellSprite(cell.MatingEnum, cell.CellSize);
+            Object.Destroy(cell.GetTransform().GetComponentInChildren<SpriteRenderer>());
+            SpriteRenderer sprite = UnityEngine.Object.Instantiate(spritePrefab, cell.GetTransform());
+            
             if (cell.Deviation == DeviationEnum.Red)
             {
-                spriteRenderer.color = Color.red;
+                sprite.color = Color.red;
             }
             cell.GetTransform().DOScale(config.GetCellSizeModifier(cell.CellSize), 0.2f);
         }

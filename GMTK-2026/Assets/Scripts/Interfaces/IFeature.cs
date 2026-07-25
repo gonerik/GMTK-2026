@@ -2,7 +2,7 @@
 {
     public interface IFeature
     {
-        public void Initialize(Cell cell);
-        public void Unsubscribe(Cell cell);
+        public void Initialize(CellUnit cell);
+        public void Unsubscribe(CellUnit cell);
     }
 }

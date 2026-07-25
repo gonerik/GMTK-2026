@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cell.Visual;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
 using DefaultNamespace.Zenject;
@@ -9,9 +10,9 @@ using MateStrategy;
 using UnityEngine;
 using Zenject;
 
-    public class Cell : MonoBehaviour, IMate, IVisualyConfigurable
+    public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
     {
-        public class Factory : PlaceholderFactory< Cell>
+        public class Factory : PlaceholderFactory< CellUnit>
         {
         } 
         
@@ -52,6 +53,7 @@ using Zenject;
     [Inject] private NavigationSystem navigationSystem;
     [Inject] private MatingService matingService;
     [Inject] private EnergyService energyService;
+    [Inject] private CellVisualAssembler visualAssembler;
 
     void Start()
     {
@@ -92,11 +94,13 @@ using Zenject;
         }
     }
     
+    private bool isInitializedByFactory;
     public void Initialize(MatingEnum matingEnum, CellSize cellSize, Vector3 position)
     {
         this.matingEnum = matingEnum;
         this.cellSize = cellSize;
         transform.position = position;
+        isInitializedByFactory = true;
         InitializeStrategies();
     }
 
@@ -112,6 +116,7 @@ using Zenject;
         cellColor.Initialize(this);
         cellMembrane.Initialize(this);
         matiStrategy.Initialize(this);
+        visualAssembler.Reassemble(this);
         
         OnReinitialized?.Invoke(this);
     }

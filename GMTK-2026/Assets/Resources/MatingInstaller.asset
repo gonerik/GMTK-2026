@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matingConfig: {fileID: 11400000, guid: 0d0a2eb483beff24d8f5c5edcd79affd, type: 2}
   cellPrefab: {fileID: 5069225946725762616, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+  redCellPrefab: {fileID: 7119170096039321031, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}

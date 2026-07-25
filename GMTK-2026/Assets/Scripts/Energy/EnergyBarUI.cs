@@ -14,6 +14,10 @@ namespace Energy
         {
             image = GetComponent<Image>();
             energyService.OnEnergyChanged += OnEnergyChanged;
+        } 
+        public void OnDestroy()
+        {
+            energyService.OnEnergyChanged -= OnEnergyChanged;
         }
         
         private void OnEnergyChanged(int energyAmount)

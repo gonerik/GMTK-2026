@@ -5,13 +5,13 @@ namespace DefaultNamespace.Strategies
 {
     public class GreenColor : IColor
     {
-        public void Initialize(Cell cell)
+        public void Initialize(CellUnit cell)
         {
             Debug.Log("Green Color Initialized");
             cell.OnMate += OnMate;
         }
 
-        public void Unsubscribe(Cell cell)
+        public void Unsubscribe(CellUnit cell)
         {
             cell.OnMate -= OnMate;
         }
@@ -24,13 +24,13 @@ namespace DefaultNamespace.Strategies
 
     public class YellowColor : IColor
     {
-        public void Initialize(Cell cell)
+        public void Initialize(CellUnit cell)
         {
             Debug.Log("Yellow Color Initialized");
             cell.OnMate += OnMate;
         }
 
-        public void Unsubscribe(Cell cell)
+        public void Unsubscribe(CellUnit cell)
         {
             cell.OnMate -= OnMate;
         }
@@ -43,13 +43,13 @@ namespace DefaultNamespace.Strategies
 
     public class RedColor : IColor
     {
-        public void Initialize(Cell cell)
+        public void Initialize(CellUnit cell)
         {
             Debug.Log("Red Color Initialized");
             cell.OnMate += HandleOnMate;
         }
 
-        public void Unsubscribe(Cell cell)
+        public void Unsubscribe(CellUnit cell)
         {
             cell.OnMate -= HandleOnMate;
         }

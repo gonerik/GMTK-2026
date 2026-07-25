@@ -13,6 +13,46 @@ MonoBehaviour:
   m_Name: CellVisualConfig
   m_EditorClassIdentifier: 
   cellSizeModifiers:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value: 0.1
+    - Key: 1
+      Value: 0.1
+    - Key: 2
+      Value: 0.2
+    - Key: 3
+      Value: 0.4
   matingModifiers:
-    _serializedList: []
+    _serializedList:
+    - Key: 0
+      Value:
+        _serializedList:
+        - Key: 1
+          Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
+        - Key: 2
+          Value: {fileID: 115284722581305891, guid: 5b260d0e66b31654bbb370dff23cfc45, type: 3}
+        - Key: 3
+          Value: {fileID: 7098014285626607948, guid: c4dfcbdcc1bf6fd4282e090d8f96b164, type: 3}
+    - Key: 1
+      Value:
+        _serializedList:
+        - Key: 0
+          Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
+    - Key: 2
+      Value:
+        _serializedList:
+        - Key: 1
+          Value: {fileID: 4208557131579813258, guid: 74af3a1cdaeef33438fa8bcda540edd8, type: 3}
+        - Key: 2
+          Value: {fileID: 2267098256590748341, guid: 17e623e16827a6245985645db7470b32, type: 3}
+        - Key: 3
+          Value: {fileID: 2101894418459184948, guid: a321111007420934ca4504727e0bd3f2, type: 3}
+    - Key: 3
+      Value:
+        _serializedList:
+        - Key: 1
+          Value: {fileID: 1796175550800619204, guid: b4a9792b10c12be42bdd65a647deb079, type: 3}
+        - Key: 2
+          Value: {fileID: 7955631374624836661, guid: 1fd11c3e77d303a4fb7a50abeb405ac1, type: 3}
+        - Key: 3
+          Value: {fileID: 2505673743500877908, guid: 85cb63dbb62e43b43b208d8c57068e7f, type: 3}

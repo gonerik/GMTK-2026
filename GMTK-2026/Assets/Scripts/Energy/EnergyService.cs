@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Zenject;
 
 namespace Energy
 {
-    public class EnergyService
+    public class EnergyService : IDisposable
     {
         public struct OnEnergyGoalReachedSignal
         {
@@ -18,11 +19,18 @@ namespace Energy
         
         [Inject] private SignalBus signalBus;
         private int energyAmount;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         
         public EnergyService()
         {
-            LeakEnergy().Forget();
+            LeakEnergy(_cts.Token).Forget();
             energyAmount = 40;
+        }
+
+        public void Dispose()
+        {
+            _cts.Cancel();
+            _cts.Dispose();
         }
 
         public void AddEnergy(int amount)
@@ -35,11 +43,11 @@ namespace Energy
             }
         }
         
-        private async UniTaskVoid LeakEnergy()
+        private async UniTaskVoid LeakEnergy(CancellationToken cancellationToken)
         {
-            while (true)
+            while (cancellationToken.IsCancellationRequested == false)
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(1));
+                await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: cancellationToken);
                 energyAmount -= 1;
                 OnEnergyChanged?.Invoke(energyAmount);
                 if (energyAmount <= 0)

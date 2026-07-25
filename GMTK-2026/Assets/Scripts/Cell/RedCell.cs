@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cell.Visual;
 using DefaultNamespace.Zenject;
 using Energy;
 using Interfaces;
@@ -21,7 +22,8 @@ namespace DefaultNamespace
         
         [Inject] private NavigationSystem navigationSystem;
         [Inject] private EnergyService energyService;
-        private List<Predicate<AIView>> targetingRules;
+        [Inject] private CellVisualAssembler visualAssembler;
+        private List<Predicate<AIView>> targetingRules = new List<Predicate<AIView>>();
         private Rigidbody2D rb;
         private float wanderTimer;
         private bool isWandering;
@@ -30,6 +32,7 @@ namespace DefaultNamespace
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            visualAssembler.Reassemble(this);
         }
 
         public Transform GetTransform()
@@ -41,6 +44,7 @@ namespace DefaultNamespace
         public void Destroy()
         {
             energyService.AddEnergy(energyAmount);
+            navigationSystem.UnregisterTarget(this);
             Destroy(gameObject);
         }
 
@@ -50,7 +54,7 @@ namespace DefaultNamespace
         
         public bool CanTarget(ITarget target)
         {
-            bool canTarget = cellSize == target.GetView().CellSize;
+            bool canTarget = true;
             foreach (var rule in targetingRules)
             {
                 if (!rule(target.GetView()))
@@ -64,9 +68,12 @@ namespace DefaultNamespace
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.gameObject.TryGetComponent(out Cell cell))
+            if (other.gameObject.TryGetComponent(out CellUnit cell))
             {
-                cell.Destroy();
+                if (cell.CellSize == cellSize)
+                {
+                    cell.Destroy();
+                }
             }
         }
 
@@ -138,17 +145,32 @@ namespace DefaultNamespace
             };
         }
         
+        private bool isInitializedByFactory;
         public void Initialize(MatingEnum matingEnum, CellSize cellSize, Vector3 position)
         {
-            targetingRules.Clear();
-            targetingRules.Add(view => view.CellSize == cellSize && view.Deviation == DeviationEnum.Red);
-            
-            
             this.matingEnum = matingEnum;
             this.cellSize = cellSize;
             transform.position = position;
+            isInitializedByFactory = true;
+            
+            SetupTargetingRules();
             
             OnReinitialized?.Invoke(this);
+        }
+
+        private void SetupTargetingRules()
+        {
+            targetingRules.Clear();
+            targetingRules.Add(view => view.CellSize == cellSize && view.Deviation == DeviationEnum.Default);
+        }
+
+        private void Start()
+        {
+            if (!isInitializedByFactory)
+            {
+                SetupTargetingRules();
+            }
+            navigationSystem.RegisterTarget(this);
         }
         
         public class Factory : PlaceholderFactory<RedCell>
