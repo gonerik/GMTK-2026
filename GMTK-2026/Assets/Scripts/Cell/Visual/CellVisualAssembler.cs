@@ -10,7 +10,7 @@ namespace Cell.Visual
     {
         [Inject] private CellVisualConfig config;
 
-        public void Reassemble(IVisualyConfigurable cell)
+        public SpriteRenderer Reassemble(IVisualyConfigurable cell)
         {
             cell.GetTransform().localScale = Vector3.zero;
 
@@ -22,12 +22,9 @@ namespace Cell.Visual
             SpriteRenderer spritePrefab = config.GetCellSprite(cell.MatingEnum, cell.CellSize);
             Object.Destroy(cell.GetTransform().GetComponentInChildren<SpriteRenderer>());
             SpriteRenderer sprite = UnityEngine.Object.Instantiate(spritePrefab, cell.GetTransform());
-            
-            if (cell.Deviation == DeviationEnum.Red)
-            {
-                sprite.color = Color.red;
-            }
+            sprite.color = config.GetDeviationColor(cell.Deviation);
             cell.GetTransform().DOScale(config.GetCellSizeModifier(cell.CellSize), 0.2f);
+            return sprite;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace MateStrategy
         
         [Inject] private CellUnit.Factory cellFactory;
         [Inject] private RedCell.Factory redCellFactory;
+        [Inject] private MatingProbabilities matingProbabilities;
 
         private int mutationChance;
         private static readonly int HornyAdditionalSpawnChance = 50;
@@ -88,9 +89,15 @@ namespace MateStrategy
                     HandleMutationAndCreation(resultEnumHorny2, mate2.CellSize, spawnPos + spawnOffset);
                 }
             }
-            HandleMutationAndCreation(resultEnum, newSize, spawnPos);
 
-
+            if (mate1.GetMatingEnum() == MatingEnum.Default && mate2.GetMatingEnum() == MatingEnum.Default)
+            {
+                CreateAndInitializeCell(resultEnum, newSize, spawnPos);
+            }
+            else
+            {
+                HandleMutationAndCreation(resultEnum, newSize, spawnPos);
+            }
             mate1.Destroy();
             mate2.Destroy();
         }
@@ -98,14 +105,31 @@ namespace MateStrategy
         private void HandleMutationAndCreation(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos)
         {
             int mutationProbability = UnityEngine.Random.Range(0, 100);
-            if (mutationProbability <= mutationChance)
+            int yellowMutationChance = matingProbabilities.GetProbability(DeviationEnum.Yellow) + mutationChance;
+            int redMutationChance = matingProbabilities.GetProbability(DeviationEnum.Red) + mutationChance;
+            int blueMutationChance = matingProbabilities.GetProbability(DeviationEnum.Blue) + mutationChance;
+            
+            if (mutationProbability <= blueMutationChance)
+            {
+                cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Blue, spawnPos);
+            }
+            else if (mutationProbability <= yellowMutationChance)
+            {
+                cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Yellow, spawnPos);
+            }
+            else if (mutationProbability <= redMutationChance)
             {
                 redCellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
             }
             else
             {
-                cellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
+                CreateAndInitializeCell(resultEnum, newSize, spawnPos);
             }
+        }
+
+        private void CreateAndInitializeCell(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos)
+        {
+            cellFactory.Create().Initialize(resultEnum, newSize,  DeviationEnum.Default, spawnPos);
         }
 
         private MatingEnum DetermineResultingEnum(MatingEnum parent1, MatingEnum parent2)
