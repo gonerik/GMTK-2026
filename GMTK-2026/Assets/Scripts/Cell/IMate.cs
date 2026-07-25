@@ -8,5 +8,6 @@ namespace Interfaces
     {
         public bool IsMating { get; set; }
         public MatingEnum GetMatingEnum();
+        public void Mate(IMate mate);
     }
 }

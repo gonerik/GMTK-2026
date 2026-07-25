@@ -12,6 +12,8 @@ namespace DefaultNamespace
     {
         public CellSize CellSize => CellSize.Acid;
         public float DetectionRange => 0f;
+        
+        public int EnergyAmount => 0;
         public bool IsMating
         {
             get;
@@ -48,6 +50,10 @@ namespace DefaultNamespace
             return MatingEnum.Acid;
         }
 
+        public void Mate(IMate mate)
+        {
+        }
+
         public bool CanTarget(ITarget target)
         {
             return CellSize - 1 == target.GetView().CellSize;
@@ -60,7 +66,6 @@ namespace DefaultNamespace
 
         public void AddTargetingRule(Predicate<AIView> predicate)
         {
-            
         }
 
         public AIView GetView()
@@ -68,14 +73,10 @@ namespace DefaultNamespace
             return new AIView()
             {
                 CellSize = CellSize,
-                MatingEnum = GetMatingEnum()
+                MatingEnum = GetMatingEnum(),
+                Deviation = DeviationEnum.Default
             };
         }
-
-        public void AddMatingRule(Predicate<AIView> rule) { }
-
-        public bool CanMate(IMate partner) => true;
-
         public void Destroy()
         {
             Destroy(gameObject);

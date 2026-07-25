@@ -5,7 +5,6 @@
         Default,
         Acid,
         Agressive,
-        Horny,
-        Red,
+        Horny
     }
 }

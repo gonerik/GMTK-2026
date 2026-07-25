@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
 using DefaultNamespace.Zenject;
+using Energy;
 using Interfaces;
 using MateStrategy;
 using UnityEngine;
 using Zenject;
 
-    public class Cell : MonoBehaviour, IMate
+    public class Cell : MonoBehaviour, IMate, IVisualyConfigurable
     {
         public class Factory : PlaceholderFactory< Cell>
         {
@@ -22,17 +23,27 @@ using Zenject;
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private GrowStrategyEnum growStrategy;
         [SerializeField] private MatingEnum matingEnum;
+        [SerializeField] private int energyAmount;
     public float DetectionRange => detectionRange;
     public CellSize CellSize => cellSize;
+    public MatingEnum MatingEnum => matingEnum;
+    public int EnergyAmount => energyAmount;
+    public DeviationEnum Deviation => DeviationEnum.Default;
+    public Transform GetTransform()
+    {
+        return transform;
+    }
 
     private List<Predicate<AIView>> targetingRules = new List<Predicate<AIView>>();
     private IColor cellColor;
     private IMembrane cellMembrane;
     private IMateStrategy matiStrategy;
+    private IDeviation deviationStrategy;
     
     public bool IsMating { get; set; }
 
     public event Action<IMate> OnMate;
+    public event Action<IVisualyConfigurable> OnReinitialized;
     
     private float wanderTimer;
     private Vector2 currentWanderDirection;
@@ -40,6 +51,7 @@ using Zenject;
     
     [Inject] private NavigationSystem navigationSystem;
     [Inject] private MatingService matingService;
+    [Inject] private EnergyService energyService;
 
     void Start()
     {
@@ -49,6 +61,8 @@ using Zenject;
 
     private void OnDestroy()
     {
+        UnsubscribeFromStrategies();
+        energyService.AddEnergy(energyAmount);
         navigationSystem.UnregisterTarget(this);
     }
 
@@ -89,8 +103,7 @@ using Zenject;
     private void InitializeStrategies()
     {
         targetingRules.Clear();
-        cellColor?.Unsubscribe(this);
-        cellMembrane?.Unsubscribe(this);
+        UnsubscribeFromStrategies();
 
         matiStrategy = CellStrategyFactory.CreateMateStrategy(matingEnum);
         cellColor = CellStrategyFactory.CreateColor(colorType);
@@ -99,8 +112,17 @@ using Zenject;
         cellColor.Initialize(this);
         cellMembrane.Initialize(this);
         matiStrategy.Initialize(this);
+        
+        OnReinitialized?.Invoke(this);
     }
-    
+
+    private void UnsubscribeFromStrategies()
+    {
+        cellColor?.Unsubscribe(this);
+        cellMembrane?.Unsubscribe(this);
+        matiStrategy?.Unsubscribe(this);
+    }
+
     private bool HandleWandering(out Vector2 direction)
     {
         direction = Vector2.zero;
@@ -158,6 +180,7 @@ using Zenject;
     {
         return transform.position;
     }
+    
 
     public void AddTargetingRule(Predicate<AIView> predicate)
     {
@@ -169,7 +192,8 @@ using Zenject;
         return new AIView()
         {
             CellSize = CellSize,
-            MatingEnum = GetMatingEnum()
+            MatingEnum = GetMatingEnum(),
+            Deviation = DeviationEnum.Default
         };
     }
 
@@ -177,4 +201,5 @@ using Zenject;
     {
         Destroy(gameObject);
     }
-}
+    
+    }

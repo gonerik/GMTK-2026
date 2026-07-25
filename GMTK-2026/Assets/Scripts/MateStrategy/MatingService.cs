@@ -15,6 +15,7 @@ namespace MateStrategy
         private GameObject cellPrefab;
         
         [Inject] private Cell.Factory cellFactory;
+        [Inject] private RedCell.Factory redCellFactory;
 
         private int mutationChance;
 
@@ -54,12 +55,23 @@ namespace MateStrategy
 
             mate1.IsMating = true;
             mate2.IsMating = true;
+            
+            
 
             MatingEnum resultEnum = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
-            CellSize newSize = IncrementSize(mate1.CellSize);
+            CellSize newSize = mate1.CellSize + 1;
             Vector3 spawnPos = (mate1.GetTargetPosition() + mate2.GetTargetPosition()) / 2f;
-
-            cellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
+            
+            int mutationProbability = UnityEngine.Random.Range(0, 100);
+            if (mutationProbability <= mutationChance)
+            {
+                redCellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
+            }
+            else
+            {
+                cellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
+            }
+            
 
             mate1.Destroy();
             mate2.Destroy();
@@ -67,26 +79,12 @@ namespace MateStrategy
 
         private MatingEnum DetermineResultingEnum(MatingEnum parent1, MatingEnum parent2)
         {
-            List<MatingEnum> pool = new List<MatingEnum>();
-
-            for (int i = 0; i < 50; i++) pool.Add(parent1);
-            for (int i = 0; i < 50; i++) pool.Add(parent2);
-            for (int i = 0; i < mutationChance; i++) pool.Add(MatingEnum.Red);
-
-            int randomIndex = UnityEngine.Random.Range(0, pool.Count);
-            return pool[randomIndex];
-        }
-
-        private CellSize IncrementSize(CellSize currentSize)
-        {
-            switch (currentSize)
+            int randomIndex = UnityEngine.Random.Range(0, 100);
+            if (randomIndex <= 50)
             {
-                case CellSize.Acid: return CellSize.Small;
-                case CellSize.Small: return CellSize.Medium;
-                case CellSize.Medium: return CellSize.Large;
-                case CellSize.Large: return CellSize.Large; // Max size
-                default: return currentSize;
+                return parent1;
             }
+            return parent2;
         }
     }
 }
