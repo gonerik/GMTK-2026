@@ -135,7 +135,7 @@ namespace Dragging
                 // Calculate world size of the sprite
                 Vector2 spriteSize = _spriteRenderer.sprite.bounds.size;
                 Vector3 worldScale = _spriteRenderer.transform.lossyScale;
-                Vector2 worldSize = new Vector2(spriteSize.x * worldScale.x, spriteSize.y * worldScale.y);
+                Vector2 worldSize = new Vector2(spriteSize.x, spriteSize.y);
 
                 if (_canvas != null)
                 {
@@ -157,7 +157,7 @@ namespace Dragging
                             goto ParentStep;
                         }
                         
-                        _uiImage.rectTransform.sizeDelta = worldSize * unitsToPixels * 10;
+                        _uiImage.rectTransform.sizeDelta = worldSize * unitsToPixels;
                     }
                     else
                     {

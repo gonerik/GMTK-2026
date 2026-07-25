@@ -688,7 +688,7 @@ GameObject:
   - component: {fileID: 467037188}
   - component: {fileID: 467037190}
   - component: {fileID: 467037189}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PetriBackgorund
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1987,8 +1987,8 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1384386927}
   m_SourcePrefab: {fileID: 100100000, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
---- !u!4 &1384386923 stripped
-Transform:
+--- !u!224 &1384386923 stripped
+RectTransform:
   m_CorrespondingSourceObject: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
   m_PrefabInstance: {fileID: 1384386922}
   m_PrefabAsset: {fileID: 0}
@@ -2326,11 +2326,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.93
+      value: -1.2
       objectReference: {fileID: 0}
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.61
+      value: -8.3
       objectReference: {fileID: 0}
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2790,8 +2790,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
---- !u!4 &2054994226 stripped
-Transform:
+--- !u!224 &2054994226 stripped
+RectTransform:
   m_CorrespondingSourceObject: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
   m_PrefabInstance: {fileID: 2054994225}
   m_PrefabAsset: {fileID: 0}
