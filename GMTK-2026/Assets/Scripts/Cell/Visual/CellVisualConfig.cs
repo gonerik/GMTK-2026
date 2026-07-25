@@ -10,6 +10,7 @@ namespace DefaultNamespace
     {
         [SerializeField] private SerializedDictionary<CellSize, float> cellSizeModifiers;
         [SerializeField] private SerializedDictionary<MatingEnum, SerializedDictionary<CellSize, SpriteRenderer>> matingModifiers;
+        [SerializeField] private SerializedDictionary<DeviationEnum, Color> deviationColors;
         
         public override void InstallBindings()
         {
@@ -18,5 +19,6 @@ namespace DefaultNamespace
         
         public float GetCellSizeModifier(CellSize cellSize) => cellSizeModifiers[cellSize];
         public SpriteRenderer GetCellSprite(MatingEnum matingEnum, CellSize cellSize) => matingModifiers[matingEnum][cellSize];
+        public Color GetDeviationColor(DeviationEnum deviationEnum) => deviationColors[deviationEnum];
     }
 }
