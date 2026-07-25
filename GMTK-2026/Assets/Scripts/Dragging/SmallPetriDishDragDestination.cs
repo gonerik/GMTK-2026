@@ -10,7 +10,9 @@ namespace Dragging
         
         public void ExecuteDrag(IDragable dragable)
         {
-            dragable.Drop(_camera.transform.position);
+            Vector3 mousePos = _camera.transform.position;
+            mousePos.z = 0f;
+            dragable.Drop(mousePos);
         }
     }
 }

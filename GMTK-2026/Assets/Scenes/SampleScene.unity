@@ -172,7 +172,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 0
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -449,7 +449,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 0
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -2018,6 +2018,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 4.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -2098,7 +2106,7 @@ GameObject:
   - component: {fileID: 1422336350}
   - component: {fileID: 1422336352}
   - component: {fileID: 1422336351}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PetriBackgorund
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2393,6 +2401,14 @@ PrefabInstance:
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -3.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3.3
       objectReference: {fileID: 0}
     - target: {fileID: 8531049101977920228, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2914,6 +2930,14 @@ PrefabInstance:
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 8844979227905460088, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
