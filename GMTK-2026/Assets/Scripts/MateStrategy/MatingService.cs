@@ -89,9 +89,15 @@ namespace MateStrategy
                     HandleMutationAndCreation(resultEnumHorny2, mate2.CellSize, spawnPos + spawnOffset);
                 }
             }
-            HandleMutationAndCreation(resultEnum, newSize, spawnPos);
 
-
+            if (mate1.GetMatingEnum() == MatingEnum.Default && mate2.GetMatingEnum() == MatingEnum.Default)
+            {
+                CreateAndInitializeCell(resultEnum, newSize, spawnPos);
+            }
+            else
+            {
+                HandleMutationAndCreation(resultEnum, newSize, spawnPos);
+            }
             mate1.Destroy();
             mate2.Destroy();
         }
@@ -117,8 +123,13 @@ namespace MateStrategy
             }
             else
             {
-                cellFactory.Create().Initialize(resultEnum, newSize,  DeviationEnum.Default, spawnPos);
+                CreateAndInitializeCell(resultEnum, newSize, spawnPos);
             }
+        }
+
+        private void CreateAndInitializeCell(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos)
+        {
+            cellFactory.Create().Initialize(resultEnum, newSize,  DeviationEnum.Default, spawnPos);
         }
 
         private MatingEnum DetermineResultingEnum(MatingEnum parent1, MatingEnum parent2)
