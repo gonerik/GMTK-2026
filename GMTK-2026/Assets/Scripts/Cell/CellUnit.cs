@@ -13,7 +13,7 @@ using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
 
-public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
+public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private CellSize cellSize;
@@ -245,5 +245,19 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable
 
     public class Factory : PlaceholderFactory<CellUnit>
     {
+    }
+
+    public SelectionInfo GetSelectionInfo()
+    {
+        return new SelectionInfo()
+        {
+            CellSize = cellSize,
+            Deviation = Deviation,
+            MatingEnum = matingEnum,
+            EnergyAmount = EnergyAmount,
+            speed = moveSpeed,
+            Age = age,
+            MaxAge = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation)
+        };
     }
 }
