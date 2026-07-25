@@ -3,6 +3,8 @@ using CoreLoop.Interfaces;
 using Dragging;
 using GameStateMachine.States;
 using Interfaces;
+using DefaultNamespace;
+using MateStrategy;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -12,7 +14,6 @@ namespace DefaultNamespace.Syringe
 {
     public class Syringe : MonoBehaviour
     {
-        [SerializeField] private GameObject cellPrefab;
         [SerializeField] private float cooldownDuration = 5f;
         
         private Button button;
@@ -23,6 +24,8 @@ namespace DefaultNamespace.Syringe
         private PlacingBasicCellState.Factory _placingBasicCellStateFactory;
         private DragState.Factory _dragStateFactory;
         private Camera _mainCamera;
+        
+        [Inject] private CellUnit.Factory cellFactory;
 
         [Inject]
         public void Construct(
@@ -89,7 +92,8 @@ namespace DefaultNamespace.Syringe
                     if (result.gameObject.TryGetComponent<IDragDestination>(out var uiDestination))
                     {
                         Vector3 spawnPos = _mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10f));
-                        uiDestination.ExecuteSpawn(cellPrefab, spawnPos);
+                        cellFactory.Create().Initialize(MatingEnum.Default, CellSize.Small, DeviationEnum.Default, spawnPos);
+                        
                         if (_cooldown != null) _cooldown.StartCooldown(cooldownDuration);
                         _gameStateMachine.ChangeState(_dragStateFactory.Create());
                         return;
@@ -105,7 +109,9 @@ namespace DefaultNamespace.Syringe
             {
                 if (hit.TryGetComponent<IDragDestination>(out var destination))
                 {
-                    destination.ExecuteSpawn(cellPrefab, worldPos);
+                    Vector3 spawnPos = new Vector3(worldPos.x, worldPos.y, 0f);
+                    cellFactory.Create().Initialize(MatingEnum.Default, CellSize.Small, DeviationEnum.Default, spawnPos);
+                    
                     if (_cooldown != null) _cooldown.StartCooldown(cooldownDuration);
                     _gameStateMachine.ChangeState(_dragStateFactory.Create());
                     return;

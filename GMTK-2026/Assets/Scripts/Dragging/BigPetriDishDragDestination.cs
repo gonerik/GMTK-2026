@@ -23,10 +23,5 @@ namespace Dragging
                 cell.SetAgeRate(ageRate);
             }
         }
-
-        public void ExecuteSpawn(GameObject prefab, Vector3 position)
-        {
-            Instantiate(prefab, position, Quaternion.identity);
-        }
     }
 }

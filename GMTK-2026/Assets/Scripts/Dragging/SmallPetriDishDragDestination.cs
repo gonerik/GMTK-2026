@@ -14,10 +14,5 @@ namespace Dragging
             mousePos.z = 0f;
             dragable.Drop(mousePos);
         }
-
-        public void ExecuteSpawn(GameObject prefab, Vector3 position)
-        {
-            
-        }
     }
 }

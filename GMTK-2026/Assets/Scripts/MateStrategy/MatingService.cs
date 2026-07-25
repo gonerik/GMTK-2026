@@ -12,7 +12,6 @@ namespace MateStrategy
     public class MatingService
     {
         private MatingConfig matingConfig;
-        private GameObject cellPrefab;
         
         [Inject] private CellUnit.Factory cellFactory;
         [Inject] private RedCell.Factory redCellFactory;
@@ -25,7 +24,6 @@ namespace MateStrategy
         public MatingService(MatingConfig matingConfig, GameObject cellPrefab)
         {
             this.matingConfig = matingConfig;
-            this.cellPrefab = cellPrefab;
             StartMutationGrowth().Forget();
         }
 
