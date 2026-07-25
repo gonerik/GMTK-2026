@@ -3,6 +3,8 @@
     public enum DeviationEnum
     {
         Default,
-        Red
+        Red,
+        Yellow,
+        Blue
     }
 }

@@ -239,5 +239,10 @@ namespace Dragging
                 }
             }
         }
+
+        public void SetAgeRate(float ageRate)
+        {
+            
+        }
     }
 }
