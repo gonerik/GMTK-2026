@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CoreLoop.Interfaces;
 using GameStateMachine.States;
 using Interfaces;
@@ -6,14 +7,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace Dragging
 {
     public class Dragable : MonoBehaviour, IDragable
     {
-        [SerializeField] private Collider2D _collider;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
-        [SerializeField] private Image _uiImage;
+        private Collider2D _collider;
+        private SpriteRenderer _spriteRenderer;
+        private Image _uiImage;
 
         private Camera _mainCamera;
         private DefaultActions _defaultActions;
@@ -41,6 +43,12 @@ namespace Dragging
         {
             _mainCamera = Camera.main;
             _canvas = Object.FindAnyObjectByType<Canvas>();
+        }
+
+        private void Start()
+        {
+            _collider = GetComponent<Collider2D>();
+            _uiImage = GetComponent<Image>();
         }
 
         private void OnEnable()
@@ -98,9 +106,28 @@ namespace Dragging
             if (!_isDragging) return;
 
             Vector2 mousePos = Mouse.current.position.ReadValue();
+            
+            // Check for UI destinations first
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                var eventData = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current);
+                eventData.position = mousePos;
+                var results = new List<UnityEngine.EventSystems.RaycastResult>();
+                UnityEngine.EventSystems.EventSystem.current.RaycastAll(eventData, results);
+
+                foreach (var result in results)
+                {
+                    if (result.gameObject.TryGetComponent<IDragDestination>(out var uiDestination))
+                    {
+                        uiDestination.ExecuteDrag(this);
+                        return;
+                    }
+                }
+            }
+
             Vector2 worldPos = _mainCamera.ScreenToWorldPoint(mousePos);
             
-            // First check for IDragDestination
+            // Then check for world-space IDragDestination
             Collider2D[] hits = Physics2D.OverlapCircleAll(worldPos, 0.1f);
             foreach (var hit in hits)
             {
@@ -116,17 +143,19 @@ namespace Dragging
         {
             _isDragging = true;
             _collider.enabled = false;
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             
             // Sync UI Image size with SpriteRenderer's visual size
             if (_spriteRenderer != null && _uiImage != null)
             {
                 _uiImage.sprite = _spriteRenderer.sprite;
+                _uiImage.color = _spriteRenderer.color;
                 _uiImage.SetNativeSize();
                 
                 // Calculate world size of the sprite
                 Vector2 spriteSize = _spriteRenderer.sprite.bounds.size;
                 Vector3 worldScale = _spriteRenderer.transform.lossyScale;
-                Vector2 worldSize = new Vector2(spriteSize.x * worldScale.x, spriteSize.y * worldScale.y);
+                Vector2 worldSize = new Vector2(spriteSize.x, spriteSize.y);
 
                 if (_canvas != null)
                 {
@@ -148,7 +177,7 @@ namespace Dragging
                             goto ParentStep;
                         }
                         
-                        _uiImage.rectTransform.sizeDelta = worldSize * unitsToPixels / 2f;
+                        _uiImage.rectTransform.sizeDelta = worldSize * unitsToPixels;
                     }
                     else
                     {

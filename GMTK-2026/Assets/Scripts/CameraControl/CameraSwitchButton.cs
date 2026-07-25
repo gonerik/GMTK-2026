@@ -1,8 +1,6 @@
-﻿using System;
-using CameraControl;
+﻿using CameraControl;
 using Cinemachine;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using Zenject;
 
