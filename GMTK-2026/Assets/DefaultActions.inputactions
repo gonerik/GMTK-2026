@@ -1,0 +1,103 @@
+{
+    "version": 1,
+    "name": "DefaultActions",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "b447ba61-da9a-45b9-905b-7cb066403410",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "a309dc77-88d9-430e-82d3-4d8e3c5d2363",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2941b906-20d1-4b61-9afb-a9bf6f9b272f",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Level",
+            "id": "7f3e15e1-32d7-45b5-8775-813911ab5472",
+            "actions": [
+                {
+                    "name": "Drag",
+                    "type": "Button",
+                    "id": "8fd4188b-4437-4a04-9b4f-584cc3240a37",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PlaceDragged",
+                    "type": "Button",
+                    "id": "6a5f4bd6-223a-4f44-94b9-be6456f08c02",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PlaceDefaultCell",
+                    "type": "Button",
+                    "id": "aa3a7901-8df0-47e0-9fe8-00b114c1aa91",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e334f757-67a0-45f4-b933-03cf844bdaf0",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drag",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f6a59125-4598-4cb8-9ab3-264181a9ad5f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PlaceDragged",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2a58fcd1-8d48-485e-861d-4d733e6d048f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PlaceDefaultCell",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
