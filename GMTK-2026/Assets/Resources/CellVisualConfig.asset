@@ -56,3 +56,13 @@ MonoBehaviour:
           Value: {fileID: 7955631374624836661, guid: 1fd11c3e77d303a4fb7a50abeb405ac1, type: 3}
         - Key: 3
           Value: {fileID: 2505673743500877908, guid: 85cb63dbb62e43b43b208d8c57068e7f, type: 3}
+  deviationColors:
+    _serializedList:
+    - Key: 0
+      Value: {r: 1, g: 1, b: 1, a: 1}
+    - Key: 1
+      Value: {r: 0.7056604, g: 0.121160544, b: 0.121160544, a: 1}
+    - Key: 2
+      Value: {r: 1, g: 0.9770001, b: 0.3075471, a: 1}
+    - Key: 3
+      Value: {r: 0.121160544, g: 0.4614614, b: 0.7056604, a: 1}
