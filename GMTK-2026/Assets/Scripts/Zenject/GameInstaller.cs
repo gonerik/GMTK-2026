@@ -1,3 +1,4 @@
+using CoreLoop.Interfaces;
 using Cell.Visual;
 using DefaultNamespace;
 using DefaultNamespace.Zenject;
@@ -9,6 +10,7 @@ public class GameInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
+        Container.Bind<DefaultActions>().AsSingle().NonLazy();
         SignalBusInstaller.Install(Container);
         Container.BindInterfacesAndSelfTo<CellVisualAssembler>().AsTransient().NonLazy();
         Container.BindInterfacesAndSelfTo<EnergyService>().AsSingle().NonLazy();
