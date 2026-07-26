@@ -16,4 +16,9 @@ public class FadeGroupFade : MonoBehaviour
     {
         fadeGroup.DOFade(0f, 1f).SetUpdate(true);
     }
+    
+    public void Fadein()
+    {
+        fadeGroup.DOFade(1f, 4f).SetUpdate(true);
+    }
 }

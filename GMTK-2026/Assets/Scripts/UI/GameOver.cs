@@ -28,8 +28,7 @@ namespace UI
 
         private void OnGameOver()
         {
-            
-            panel.SetActive(true);
+            SceneManager.LoadScene("LoseState");
         }
 
         private void RestartGame()
