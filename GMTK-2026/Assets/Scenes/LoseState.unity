@@ -151,7 +151,7 @@ RectTransform:
   m_GameObject: {fileID: 1803199}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
+  m_LocalScale: {x: 1.01, y: 1.01, z: 1.01}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 82461535}
@@ -353,7 +353,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &18210754
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1686,7 +1686,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &775348968
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1797,16 +1797,10 @@ PlayableDirector:
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
   m_SceneBindings:
-  - key: {fileID: 439468974380965847, guid: 733fe2e5de0c0814b97917bc049ae0e8, type: 2}
-    value: {fileID: 1933844591}
-  - key: {fileID: 3467322385507449136, guid: 733fe2e5de0c0814b97917bc049ae0e8, type: 2}
-    value: {fileID: 1479730665}
-  - key: {fileID: 6786710700564020247, guid: 733fe2e5de0c0814b97917bc049ae0e8, type: 2}
-    value: {fileID: 18210755}
-  - key: {fileID: -5693203649681298321, guid: 733fe2e5de0c0814b97917bc049ae0e8, type: 2}
-    value: {fileID: 775348969}
   - key: {fileID: 4811642503405865126, guid: 733fe2e5de0c0814b97917bc049ae0e8, type: 2}
     value: {fileID: 1211887054}
+  - key: {fileID: 6721961980094341547, guid: 733fe2e5de0c0814b97917bc049ae0e8, type: 2}
+    value: {fileID: 1933844591}
   m_ExposedReferences:
     m_References: []
 --- !u!4 &800210064
@@ -2532,12 +2526,12 @@ GameObject:
   - component: {fileID: 1211887054}
   - component: {fileID: 1211887055}
   m_Layer: 5
-  m_Name: Image
+  m_Name: TTTHIIISSS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1211887054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2791,7 +2785,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1479730664
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3325,7 +3319,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1551, y: 19.45396}
+  m_AnchoredPosition: {x: -484, y: 6}
   m_SizeDelta: {x: 1362, y: 1260}
   m_Pivot: {x: 0.61, y: 0.47}
 --- !u!212 &1933844590
@@ -3448,11 +3442,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f45f37e7b40e89140bdaef52b61cb32a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minAngle: -30
-  maxAngle: 30
+  minAngle: 180
+  maxAngle: 180
   speed: 0.01
   motionType: 0
-  phaseOffset: 1
+  phaseOffset: 0
 --- !u!114 &1933844595
 MonoBehaviour:
   m_ObjectHideFlags: 0
