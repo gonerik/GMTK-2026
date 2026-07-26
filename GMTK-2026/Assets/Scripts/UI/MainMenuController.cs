@@ -42,7 +42,6 @@ namespace UI
 
         public void Play()
         { 
-            Debug.Log("Play");
             director.Play();
         }
         
