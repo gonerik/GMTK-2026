@@ -593,6 +593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880ae118b7db4c538f289a8670d82d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  globalTimerPrefab: {fileID: -4479393231557173206, guid: 47ef5ebe738256b42991ceffa5d23507, type: 3}
 --- !u!114 &416343248
 MonoBehaviour:
   m_ObjectHideFlags: 0
