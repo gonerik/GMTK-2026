@@ -16,6 +16,7 @@ public class GameInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<CellVisualAssembler>().AsTransient().NonLazy();
         Container.BindInterfacesAndSelfTo<EnergyService>().AsSingle().NonLazy();
         Container.DeclareSignal<EnergyService.OnEnergyGoalReachedSignal>();
+        Container.DeclareSignal<EnergyService.OnEnergyLostSignal>();
         Container.BindInterfacesAndSelfTo<NavigationSystem>().AsSingle().NonLazy();
     }
 }

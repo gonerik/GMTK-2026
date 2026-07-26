@@ -9,6 +9,7 @@ namespace Cell
     [ CreateAssetMenu( fileName = "CellLifetimeConfig", menuName = "DefaultNamespace/CellLifetimeConfig", order = 0 )]
     public class CellLifetimeConfig : ScriptableObjectInstaller
     {
+        [SerializeField] private GameObject acidPrefab;
         [SerializeField] private SerializedDictionary<MatingEnum, int> MatingLifetimeAddition;
         [SerializeField] private SerializedDictionary<CellSize, int> SizeLifetimeAddition;
         [SerializeField] private SerializedDictionary<DeviationEnum, int> DeviationLifetimeAddition;
@@ -37,5 +38,7 @@ namespace Cell
             energyGain += DeviationEnergyGainAddition[deviationEnum];
             return energyGain;
         }
+
+        public GameObject AcidPrefab => acidPrefab;
     }
 }

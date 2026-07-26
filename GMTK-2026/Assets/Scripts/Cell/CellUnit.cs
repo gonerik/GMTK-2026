@@ -25,6 +25,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     [SerializeField] private MatingEnum matingEnum;
     private IColor cellColor;
     private IMembrane cellMembrane;
+    private ISize sizeStrategy;
     private Vector2 currentWanderDirection;
     private IDeviation deviationStrategy;
     private float ageRate;
@@ -36,6 +37,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     private SpriteRenderer spriteRenderer;
     [Inject] private CellLifetimeConfig lifetimeConfig;
     [Inject] private MatingService matingService;
+    [Inject] private Acid.Factory acidFactory;
     private IMateStrategy matiStrategy;
 
     [Inject] private NavigationSystem navigationSystem;
@@ -47,7 +49,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     private void Start()
     {
-        InitializeStrategies();
+        Initialize(matingEnum, cellSize, DeviationEnum.Default, transform.position);
         navigationSystem.RegisterTarget(this);
         LifeTimeTask().Forget();
     }
@@ -77,6 +79,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     private void OnDestroy()
     {
+        OnDie?.Invoke(this);
         UnsubscribeFromStrategies();
         energyService.AddEnergy(EnergyAmount);
         navigationSystem.UnregisterTarget(this);
@@ -117,9 +120,14 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     public bool CanTarget(ITarget target)
     {
-        var shouldTarget = true;
-        foreach (var rule in targetingRules) shouldTarget = rule.Invoke(target.GetView()) && shouldTarget;
-        return shouldTarget;
+        foreach (var rule in targetingRules)
+        {
+            if (rule.Invoke(target.GetView()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Vector3 GetTargetPosition()
@@ -160,6 +168,8 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     public event Action<IMate> OnMate;
 
+    public event Action<CellUnit> OnDie;
+
     private async UniTaskVoid LifeTimeTask()
     {
         age = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
@@ -185,6 +195,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         {
             moveSpeed = 5f;
         }
+        
         transform.position = position;
         isInitializedByFactory = true;
         InitializeStrategies();
@@ -198,10 +209,12 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         matiStrategy = CellStrategyFactory.CreateMateStrategy(matingEnum);
         cellColor = CellStrategyFactory.CreateColor(colorType);
         cellMembrane = CellStrategyFactory.CreateMembrane(membraneType);
+        sizeStrategy = CellStrategyFactory.CreateSize(cellSize, acidFactory);
 
         cellColor.Initialize(this);
         cellMembrane.Initialize(this);
         matiStrategy.Initialize(this);
+        sizeStrategy.Initialize(this);
         spriteRenderer = visualAssembler.Reassemble(this);
 
         OnReinitialized?.Invoke(this);
@@ -218,6 +231,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         cellColor?.Unsubscribe(this);
         cellMembrane?.Unsubscribe(this);
         matiStrategy?.Unsubscribe(this);
+        sizeStrategy?.Unsubscribe(this);
     }
 
     private bool HandleWandering(out Vector2 direction)
