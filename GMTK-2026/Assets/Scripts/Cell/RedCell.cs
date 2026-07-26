@@ -32,7 +32,6 @@ namespace DefaultNamespace
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
-            visualAssembler.Reassemble(this);
         }
 
         public Transform GetTransform()
@@ -54,23 +53,21 @@ namespace DefaultNamespace
         
         public bool CanTarget(ITarget target)
         {
-            bool canTarget = true;
             foreach (var rule in targetingRules)
             {
-                if (!rule(target.GetView()))
+                if (rule.Invoke(target.GetView()))
                 {
-                    canTarget = false;
-                    break;
+                    return true;
                 }
             }
-            return canTarget;
+            return false;
         }
 
         private void OnCollisionEnter2D(Collision2D other)
         {
             if (other.gameObject.TryGetComponent(out CellUnit cell))
             {
-                if (cell.CellSize == cellSize && !cell.IsMating)
+                if (cell.CellSize == CellSize && !cell.IsMating)
                 {
                     cell.Destroy();
                 }
@@ -155,13 +152,14 @@ namespace DefaultNamespace
             
             SetupTargetingRules();
             
+            visualAssembler.Reassemble(this);
             OnReinitialized?.Invoke(this);
         }
 
         private void SetupTargetingRules()
         {
             targetingRules.Clear();
-            targetingRules.Add(view => view.CellSize == cellSize && view.Deviation == DeviationEnum.Default);
+            targetingRules.Add(view => view.CellSize == CellSize && view.Deviation != DeviationEnum.Red);
         }
 
         private void Start()
@@ -169,6 +167,7 @@ namespace DefaultNamespace
             if (!isInitializedByFactory)
             {
                 SetupTargetingRules();
+                visualAssembler.Reassemble(this);
             }
             navigationSystem.RegisterTarget(this);
         }

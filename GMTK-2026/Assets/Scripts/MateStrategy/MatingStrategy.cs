@@ -21,7 +21,7 @@ namespace DefaultNamespace
         {
             if (cell.GetView().Deviation == DeviationEnum.Red)
             {
-                cell.AddTargetingRule(x => x.Deviation != DeviationEnum.Red && x.CellSize == cell.CellSize);
+                cell.AddTargetingRule(x => x.Deviation != DeviationEnum.Red && x.CellSize == cell.GetView().CellSize);
                 return;
             }
             if(cell.GetView().CellSize != CellSize.Large)

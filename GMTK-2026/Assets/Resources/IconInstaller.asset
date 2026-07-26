@@ -23,16 +23,16 @@ MonoBehaviour:
   DeviationIcons:
     _serializedList:
     - Key: 1
-      Value: {fileID: 21300000, guid: 8c728ed9eb1d87a4b893f110d6f31134, type: 3}
+      Value: {fileID: 21300000, guid: 65df2b7226ea3894ea33b7ec8cb95cf0, type: 3}
     - Key: 2
-      Value: {fileID: 21300000, guid: 41a43341e60aae54c9d40d41cd6859ba, type: 3}
+      Value: {fileID: 21300000, guid: 0a147e04ab1e18e47b2a5950366b88f4, type: 3}
     - Key: 3
-      Value: {fileID: 21300000, guid: 2aa2c3ec886dc8746bde334971fb809a, type: 3}
+      Value: {fileID: 21300000, guid: 09c5699c957b1d142976d0a980e27c82, type: 3}
   SizeIcons:
     _serializedList:
     - Key: 1
-      Value: {fileID: 21300000, guid: 4a71bb5d12896914189e1226eb67e505, type: 3}
+      Value: {fileID: 21300000, guid: 692261bb98167264b8a8fbfb8790eb50, type: 3}
     - Key: 2
-      Value: {fileID: 21300000, guid: 973831b30e8d4624cbbd79c8d105d97d, type: 3}
+      Value: {fileID: 21300000, guid: 6a3dd71628a207e439df278ec028820c, type: 3}
     - Key: 3
-      Value: {fileID: 21300000, guid: 99e86a8c9df71d546be88a75442ebc7e, type: 3}
+      Value: {fileID: 21300000, guid: 740151c36a2ce8e4293946724dda2f71, type: 3}
