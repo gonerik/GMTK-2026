@@ -225,6 +225,11 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         this.ageRate = ageRate;
         Debug.Log("Age rate set to " + ageRate);
     }
+
+    public void SetVisionRange(float visionRange)
+    {
+        detectionRange = visionRange;
+    }
     
     private void UnsubscribeFromStrategies()
     {

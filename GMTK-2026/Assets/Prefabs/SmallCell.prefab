@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 125395646248406778}
   - component: {fileID: 7592239569899433161}
   - component: {fileID: 2224442620536598353}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: SmallCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,7 +61,6 @@ MonoBehaviour:
   moveSpeed: 2
   growStrategy: 0
   matingEnum: 2
-  energyAmount: 1
 --- !u!50 &8041582359639678116
 Rigidbody2D:
   serializedVersion: 4
@@ -166,9 +165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6dc79ba97f24c0da82b8428ee188406, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _collider: {fileID: 4966866317419671225}
-  _spriteRenderer: {fileID: 0}
-  _uiImage: {fileID: 0}
 --- !u!222 &2224442620536598353
 CanvasRenderer:
   m_ObjectHideFlags: 0

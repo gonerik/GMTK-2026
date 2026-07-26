@@ -6,7 +6,7 @@ namespace Cell.Selectable
     {
         public override void InstallBindings()
         {
-            Container.Bind<SelectableController>().AsSingle();
+            Container.BindInterfacesAndSelfTo<SelectableController>().AsSingle();
         }
     }
 }
