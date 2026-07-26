@@ -11,6 +11,7 @@ namespace UI
     {
         //[Inject] private readonly ISceneLoader sceneLoader;
         [SerializeField] private SettingMenu settingMenu;
+        [SerializeField] private Credits credits;
         
         [SerializeField] private Button startButton;
         [SerializeField] private Button settingsButton;
@@ -44,7 +45,7 @@ namespace UI
         }
         public void Credits()
         {
-            //sceneLoader.LoadCreditsScene();
+            credits.gameObject.SetActive(true);
         }
         
         public void Quit()
