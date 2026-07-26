@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{f59bd5b6-2027-4f62-8704-1b2ffa9cd1ac}">
+		<property name="assetPath">
+			<value>SFX/putDown.mp3</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.312</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{b3e9d1dd-2310-447a-9bbe-432259079d5f}</destination>
+		</relationship>
+	</object>
+</objects>

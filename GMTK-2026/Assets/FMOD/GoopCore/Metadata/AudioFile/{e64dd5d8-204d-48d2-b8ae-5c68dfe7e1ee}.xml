@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{e64dd5d8-204d-48d2-b8ae-5c68dfe7e1ee}">
+		<property name="assetPath">
+			<value>SFX/zoomIn.mp3</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.4399999999999999</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{b3e9d1dd-2310-447a-9bbe-432259079d5f}</destination>
+		</relationship>
+	</object>
+</objects>
