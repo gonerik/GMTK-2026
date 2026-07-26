@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cell;
 using Cell.Visual;
+using Cysharp.Threading.Tasks;
 using DefaultNamespace.Zenject;
 using Energy;
 using Interfaces;
@@ -10,7 +12,7 @@ using Zenject;
 
 namespace DefaultNamespace
 {
-    public class RedCell : MonoBehaviour, IVisualyConfigurable, ITarget, IEntity
+    public class RedCell : MonoBehaviour, IVisualyConfigurable, ITarget, IEntity, ISelectable
     {
         [SerializeField] private CellSize cellSize;
         [SerializeField] private MatingEnum matingEnum;
@@ -23,15 +25,34 @@ namespace DefaultNamespace
         [Inject] private NavigationSystem navigationSystem;
         [Inject] private EnergyService energyService;
         [Inject] private CellVisualAssembler visualAssembler;
+        [Inject] private CellLifetimeConfig lifetimeConfig;
         private List<Predicate<AIView>> targetingRules = new List<Predicate<AIView>>();
         private Rigidbody2D rb;
         private float wanderTimer;
         private bool isWandering;
         private Vector2 currentWanderDirection;
+        private float age;
+        private float ageRate = 1;
+        
+        private const string DieSound = "event:/Cell dies";
+        
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            LifeTimeTask().Forget();
+        }
+        
+        private async UniTaskVoid LifeTimeTask()
+        {
+            age = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
+            while (age >= 0)
+            {
+                age -= ageRate;
+                await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: this.GetCancellationTokenOnDestroy());
+            }
+            FMODUnity.RuntimeManager.PlayOneShot(DieSound);
+            Destroy();
         }
 
         public Transform GetTransform()
@@ -140,6 +161,26 @@ namespace DefaultNamespace
                 MatingEnum = matingEnum,
                 Deviation = DeviationEnum.Red
             };
+        }
+
+        public SelectionInfo GetSelectionInfo()
+        {
+            return new SelectionInfo()
+            {
+                CellSize = CellSize,
+                Deviation = Deviation,
+                MatingEnum = matingEnum,
+                EnergyAmount = energyAmount,
+                speed = moveSpeed,
+                Age = age,
+                MaxAge = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation)
+            };
+        }
+
+        public void SetAgeRate(float ageRate)
+        {
+            this.ageRate = ageRate;
+            Debug.Log("Age rate set to " + ageRate);
         }
         
         private bool isInitializedByFactory;

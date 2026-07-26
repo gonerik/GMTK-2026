@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
-using FMODUnity;
 using Interfaces;
 using UnityEngine;
 using Zenject;
@@ -49,7 +46,15 @@ namespace MateStrategy
             {
                 mate1.IsMating = true;
                 mate2.IsMating = true;
-                CreateAndInitializeCell(mate1.GetMatingEnum()+1, mate1.CellSize, mate1.GetTargetPosition());
+                MatingEnum resultingEnum = mate1.GetMatingEnum() + 1;
+                if (mate1.GetMatingEnum() == MatingEnum.Default && mate2.GetMatingEnum() == MatingEnum.Default)
+                {
+                    CreateAndInitializeCell(resultingEnum, mate1.CellSize, mate1.GetTargetPosition());
+                }
+                else
+                {
+                    HandleMutationAndCreation(resultingEnum, mate1.CellSize, mate1.GetTargetPosition(), mate1.GetView().Deviation, mate2.GetView().Deviation);
+                }
                 mate1.Destroy();
                 mate2.Destroy();
                 return;
@@ -58,7 +63,15 @@ namespace MateStrategy
             {
                 mate1.IsMating = true;
                 mate2.IsMating = true;
-                CreateAndInitializeCell(mate2.GetMatingEnum()+1, mate2.CellSize, mate2.GetTargetPosition());
+                MatingEnum resultingEnum = mate2.GetMatingEnum() + 1;
+                if (mate1.GetMatingEnum() == MatingEnum.Default && mate2.GetMatingEnum() == MatingEnum.Default)
+                {
+                    CreateAndInitializeCell(resultingEnum, mate2.CellSize, mate2.GetTargetPosition());
+                }
+                else
+                {
+                    HandleMutationAndCreation(resultingEnum, mate2.CellSize, mate2.GetTargetPosition(), mate1.GetView().Deviation, mate2.GetView().Deviation);
+                }
                 mate1.Destroy();
                 mate2.Destroy();
                 return;
@@ -99,7 +112,7 @@ namespace MateStrategy
                 {
                     MatingEnum resultEnumHorny1 = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
                     Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
-                    HandleMutationAndCreation(resultEnumHorny1, mate1.CellSize, spawnPos + spawnOffset);
+                    HandleMutationAndCreation(resultEnumHorny1, mate1.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
                 }
             }
             if(mate2.GetMatingEnum() == MatingEnum.Horny)
@@ -109,7 +122,7 @@ namespace MateStrategy
                 {
                     MatingEnum resultEnumHorny2 = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
                     Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
-                    HandleMutationAndCreation(resultEnumHorny2, mate2.CellSize, spawnPos + spawnOffset);
+                    HandleMutationAndCreation(resultEnumHorny2, mate2.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
                 }
             }
 
@@ -119,33 +132,50 @@ namespace MateStrategy
             }
             else
             {
-                HandleMutationAndCreation(resultEnum, newSize, spawnPos);
+                HandleMutationAndCreation(resultEnum, newSize, spawnPos, mate1.GetView().Deviation, mate2.GetView().Deviation);
             }
             mate1.Destroy();
             mate2.Destroy();
         }
 
-        private void HandleMutationAndCreation(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos)
+        private void HandleMutationAndCreation(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos, DeviationEnum parent1Deviation, DeviationEnum parent2Deviation)
         {
-            int mutationProbability = UnityEngine.Random.Range(0, 100);
-            int yellowMutationChance = matingProbabilities.GetProbability(DeviationEnum.Yellow) + mutationChance;
-            int redMutationChance = matingProbabilities.GetProbability(DeviationEnum.Red) + mutationChance;
-            int blueMutationChance = matingProbabilities.GetProbability(DeviationEnum.Blue) + mutationChance;
+            int redProb = matingProbabilities.GetProbability(DeviationEnum.Red);
+            int yellowProb = matingProbabilities.GetProbability(DeviationEnum.Yellow);
+            int blueProb = matingProbabilities.GetProbability(DeviationEnum.Blue);
+
+            // Inheritance logic
+            int inheritanceBonus = 30; // 30% bonus for having a parent with deviation
             
-            if (mutationProbability <= blueMutationChance)
+            if (parent1Deviation == DeviationEnum.Red) redProb += inheritanceBonus;
+            if (parent2Deviation == DeviationEnum.Red) redProb += inheritanceBonus;
+            
+            if (parent1Deviation == DeviationEnum.Yellow) yellowProb += inheritanceBonus;
+            if (parent2Deviation == DeviationEnum.Yellow) yellowProb += inheritanceBonus;
+            
+            if (parent1Deviation == DeviationEnum.Blue) blueProb += inheritanceBonus;
+            if (parent2Deviation == DeviationEnum.Blue) blueProb += inheritanceBonus;
+            
+            int totalMutationChance = redProb + yellowProb + blueProb + mutationChance;
+            int mutationProbability = UnityEngine.Random.Range(0, 100);
+
+            if (mutationProbability < totalMutationChance)
             {
                 FMODUnity.RuntimeManager.PlayOneShot(MutateSoundID);
-                cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Blue, spawnPos);
-            }
-            else if (mutationProbability <= yellowMutationChance)
-            {
-                FMODUnity.RuntimeManager.PlayOneShot(MutateSoundID);
-                cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Yellow, spawnPos);
-            }
-            else if (mutationProbability <= redMutationChance)
-            {
-                FMODUnity.RuntimeManager.PlayOneShot(MutateSoundID);
-                redCellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
+                
+                int selectionRoll = UnityEngine.Random.Range(0, redProb + yellowProb + blueProb);
+                if (selectionRoll < blueProb)
+                {
+                    cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Blue, spawnPos);
+                }
+                else if (selectionRoll < blueProb + yellowProb)
+                {
+                    cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Yellow, spawnPos);
+                }
+                else
+                {
+                    redCellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
+                }
             }
             else
             {

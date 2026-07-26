@@ -28,13 +28,13 @@ public class GlobalTimer : MonoBehaviour
         elapsedTime = Mathf.Clamp(elapsedTime, 0f, totalTime);
 
         float progress = ProgressTime;
-        if (!_goTo2Triggered && progress >= 0.5f)
+        if (!_goTo2Triggered && progress >= 0.33f)
         {
             _goTo2Triggered = true;
             FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Go To 2", 1);
         }
         
-        if (!_goTo3Triggered && progress >= 0.75f)
+        if (!_goTo3Triggered && progress >= 0.66f)
         {
             _goTo3Triggered = true;
             FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Go To 3", 1);

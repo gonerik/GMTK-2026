@@ -199,11 +199,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         this.matingEnum = matingEnum;
         this.cellSize = cellSize;
         this.Deviation = deviationEnum;
-        if(deviationEnum == DeviationEnum.Red)
-        {
-            Deviation = DeviationEnum.Default;
-        }
-
+        
         if (deviationEnum == DeviationEnum.Blue)
         {
             moveSpeed = 5f;
