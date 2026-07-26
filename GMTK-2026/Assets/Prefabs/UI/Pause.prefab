@@ -301,7 +301,7 @@ SpriteRenderer:
   m_Size: {x: 19.2, y: 10.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1754147312273078784
@@ -448,7 +448,7 @@ SpriteRenderer:
   m_Size: {x: 19.2, y: 10.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2311658914286225624
@@ -807,6 +807,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pauseSprite: {fileID: 21300000, guid: 5b009755efc769d4da7535f58cafd719, type: 3}
   resumeSprite: {fileID: 21300000, guid: 02f1b9b2cbce7f44dabc191df579cd65, type: 3}
+  backToMenuButton: {fileID: 7989512895418354066}
+  resetLevelButton: {fileID: 634153922918285387}
+  masterVolumeSlider: {fileID: 6608549730703822496}
 --- !u!1 &3041839077923000919
 GameObject:
   m_ObjectHideFlags: 0
@@ -981,7 +984,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3425803416311404835}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0

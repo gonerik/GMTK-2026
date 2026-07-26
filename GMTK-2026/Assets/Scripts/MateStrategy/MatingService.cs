@@ -45,20 +45,20 @@ namespace MateStrategy
                 return;
             }
 
-            if (mate1.GetView().CellSize == CellSize.Small && mate2.GetView().CellSize == CellSize.Acid && mate1.GetMatingEnum() == MatingEnum.Default)
+            if (mate1.GetView().CellSize == CellSize.Small && mate2.GetView().CellSize == CellSize.Acid && mate1.GetMatingEnum() != MatingEnum.Horny)
             {
                 mate1.IsMating = true;
                 mate2.IsMating = true;
-                CreateAndInitializeCell(MatingEnum.Agressive, mate1.CellSize, mate1.GetTargetPosition());
+                CreateAndInitializeCell(mate1.GetMatingEnum()+1, mate1.CellSize, mate1.GetTargetPosition());
                 mate1.Destroy();
                 mate2.Destroy();
                 return;
             }
-            if(mate2.GetView().CellSize == CellSize.Small && mate1.GetView().CellSize == CellSize.Acid && mate2.GetMatingEnum() == MatingEnum.Default)
+            if(mate2.GetView().CellSize == CellSize.Small && mate1.GetView().CellSize == CellSize.Acid && mate2.GetMatingEnum() != MatingEnum.Horny)
             {
                 mate1.IsMating = true;
                 mate2.IsMating = true;
-                CreateAndInitializeCell(MatingEnum.Agressive, mate2.CellSize, mate2.GetTargetPosition());
+                CreateAndInitializeCell(mate2.GetMatingEnum()+1, mate2.CellSize, mate2.GetTargetPosition());
                 mate1.Destroy();
                 mate2.Destroy();
                 return;
@@ -82,10 +82,15 @@ namespace MateStrategy
             mate1.IsMating = true;
             mate2.IsMating = true;
             
-
+            
             MatingEnum resultEnum = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
             CellSize newSize = mate1.CellSize + 1;
             Vector3 spawnPos = (mate1.GetTargetPosition() + mate2.GetTargetPosition()) / 2f;
+
+            if (mate1.GetMatingEnum() == MatingEnum.Agressive || mate2.GetMatingEnum() == MatingEnum.Agressive)
+            {
+                resultEnum = MatingEnum.Horny;
+            }
 
             if (mate1.GetMatingEnum() == MatingEnum.Horny)
             {

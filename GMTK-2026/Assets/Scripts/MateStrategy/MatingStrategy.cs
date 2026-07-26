@@ -19,8 +19,10 @@ namespace DefaultNamespace
     {
         public void Initialize(CellUnit cell)
         {
-            cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && cell.GetView().Deviation == x.Deviation);
-            cell.AddTargetingRule(x => cell.GetView().CellSize != CellSize.Large && x.CellSize != CellSize.Large);
+            if(cell.GetView().CellSize != CellSize.Large)
+            {
+                cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && cell.GetView().Deviation != DeviationEnum.Red);
+            }
         }
 
         public void Unsubscribe(CellUnit cell)
@@ -32,8 +34,8 @@ namespace DefaultNamespace
     {
         public void Initialize(CellUnit cell)
         {
-            cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && cell.GetView().Deviation == x.Deviation);
-            cell.AddTargetingRule(x => cell.GetView().CellSize != CellSize.Large && x.CellSize != CellSize.Large);
+            if(cell.GetView().CellSize == CellSize.Large) return;
+            cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && cell.GetView().Deviation != DeviationEnum.Red);
         }
 
         public void Unsubscribe(CellUnit cell)

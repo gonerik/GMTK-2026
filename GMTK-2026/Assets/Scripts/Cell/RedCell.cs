@@ -70,7 +70,7 @@ namespace DefaultNamespace
         {
             if (other.gameObject.TryGetComponent(out CellUnit cell))
             {
-                if (cell.CellSize == cellSize)
+                if (cell.CellSize == cellSize && !cell.IsMating)
                 {
                     cell.Destroy();
                 }

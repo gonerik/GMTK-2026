@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.03.00">
 	<object class="ParameterPreset" id="{8ae0e877-cee4-4ab3-9200-88c3becf383a}">
 		<property name="name">
-			<value>Go To 2</value>
+			<value>Transition</value>
 		</property>
 		<relationship name="folder">
 			<destination>{1d310fae-2664-43b6-af37-5361b3605e4e}</destination>
@@ -16,7 +16,7 @@
 			<value>1</value>
 		</property>
 		<property name="maximum">
-			<value>2</value>
+			<value>4</value>
 		</property>
 		<property name="isGlobal">
 			<value>true</value>

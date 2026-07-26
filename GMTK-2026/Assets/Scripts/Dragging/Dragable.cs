@@ -29,6 +29,9 @@ namespace Dragging
         private const string PickUpSound = "event:/Pick up";
         private const string DropSound = "event:/Put Down";
 
+        private Texture2D _cursorTexture;
+        private const string CursorPath = "Assets/Art/UI/icon_tweezersIdle.png";
+        
         [Inject]
         public void Construct(
             DefaultActions defaultActions,
@@ -46,6 +49,21 @@ namespace Dragging
         {
             _mainCamera = Camera.main;
             _canvas = Object.FindAnyObjectByType<Canvas>();
+            LoadCursorTexture();
+        }
+
+        private void LoadCursorTexture()
+        {
+            if (System.IO.File.Exists(CursorPath))
+            {
+                byte[] fileData = System.IO.File.ReadAllBytes(CursorPath);
+                _cursorTexture = new Texture2D(2, 2);
+                _cursorTexture.LoadImage(fileData);
+            }
+            else
+            {
+                Debug.LogError($"Cursor texture not found at path: {CursorPath}");
+            }
         }
 
         private void Start()
@@ -200,6 +218,7 @@ namespace Dragging
                 transform.SetParent(_canvas.transform, true);
             }
             
+            Cursor.SetCursor(_cursorTexture, Vector2.zero, CursorMode.Auto);
             _gameStateMachine.ChangeState(_placeDraggedStateFactory.Create());
         }
 
@@ -232,6 +251,7 @@ namespace Dragging
             _spriteRenderer.enabled = true;
             _uiImage.enabled = false;
             _collider.enabled = true; // Final state for success
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             _gameStateMachine.ChangeState(_dragStateFactory.Create());
         }
     }
