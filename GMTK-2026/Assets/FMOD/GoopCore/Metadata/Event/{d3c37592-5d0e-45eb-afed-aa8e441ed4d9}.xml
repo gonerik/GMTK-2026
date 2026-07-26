@@ -99,6 +99,9 @@
 		<property name="length">
 			<value>14</value>
 		</property>
+		<property name="spawnRate">
+			<value>22</value>
+		</property>
 		<property name="pitchRandomization">
 			<value>2.10000014</value>
 		</property>

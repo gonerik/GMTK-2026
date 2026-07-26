@@ -2,6 +2,7 @@ using System;
 using CoreLoop.Interfaces;
 using GameStateMachine.States;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 
@@ -18,10 +19,29 @@ namespace UI
         
         [SerializeField] private Sprite pauseSprite;
         [SerializeField] private Sprite resumeSprite;
+        
+        [SerializeField] private Button backToMenuButton;
+        [SerializeField] private Button resetLevelButton;
 
         private void Start()
         {
             buttonImage = GetComponent<Image>();
+        }
+
+        private void OnEnable()
+        {
+            backToMenuButton.onClick.AddListener(OnBackToMenuClicked);
+            resetLevelButton.onClick.AddListener(OnResetLevelClicked);
+        }
+
+        private void OnResetLevelClicked()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        private void OnBackToMenuClicked()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
 
         public void PauseGame()
