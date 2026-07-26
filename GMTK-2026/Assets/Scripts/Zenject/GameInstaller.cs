@@ -8,6 +8,8 @@ using Zenject;
 
 public class GameInstaller : MonoInstaller
 {
+    [SerializeField] private GlobalTimer globalTimerPrefab;
+    
     public override void InstallBindings()
     {
         Container.Bind<DefaultActions>().AsSingle().NonLazy();
@@ -18,5 +20,9 @@ public class GameInstaller : MonoInstaller
         Container.DeclareSignal<EnergyService.OnEnergyGoalReachedSignal>();
         Container.DeclareSignal<EnergyService.OnEnergyLostSignal>();
         Container.BindInterfacesAndSelfTo<NavigationSystem>().AsSingle().NonLazy();
+        Container.Bind<GlobalTimer>()
+            .FromComponentInNewPrefab(globalTimerPrefab)
+            .AsSingle()
+            .NonLazy();
     }
 }
