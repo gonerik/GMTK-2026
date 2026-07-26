@@ -14,3 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matingDuration: 1
   mutationChanceGrowthRate: 5
+  matingChaceModifier:
+    _serializedList:
+    - Key: 0
+      Value: 10
+    - Key: 1
+      Value: 0
+    - Key: 2
+      Value: 30
+    - Key: 3
+      Value: 50
