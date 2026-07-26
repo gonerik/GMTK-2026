@@ -36,7 +36,7 @@ namespace Energy
 
         public void AddEnergy(int amount)
         {
-            energyAmount += amount;
+            energyAmount = (int)MathF.Max(energyAmount + amount, 100);
             OnEnergyChanged?.Invoke(energyAmount);
             if (energyAmount >= 100)
             {
@@ -50,6 +50,7 @@ namespace Energy
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: cancellationToken);
                 energyAmount -= 1;
+                if (energyAmount < 0) energyAmount = 0;
                 OnEnergyChanged?.Invoke(energyAmount);
                 if (energyAmount <= 0)
                 {

@@ -120,10 +120,10 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639206784652596979
+  lastModified: 639206797635351293
   FileSizes:
   - Name: Desktop
-    Value: 2176
+    Value: 2480
   Exists: 1
 --- !u!114 &-8178623191943287553
 MonoBehaviour:
@@ -194,7 +194,7 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/First Discovery.bank
   Name: First Discovery
   StudioPath: bank:/First Discovery
-  lastModified: 639206784652460134
+  lastModified: 639206797635341247
   FileSizes:
   - Name: Desktop
     Value: 69920
@@ -581,7 +581,7 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/Cell Interactions.bank
   Name: Cell Interactions
   StudioPath: bank:/Cell Interactions
-  lastModified: 639206784646587283
+  lastModified: 639206797635271222
   FileSizes:
   - Name: Desktop
     Value: 223456
@@ -933,7 +933,7 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/Tracks.bank
   Name: Tracks
   StudioPath: bank:/Tracks
-  lastModified: 639206784713821424
+  lastModified: 639206797635747713
   FileSizes:
   - Name: Desktop
     Value: 5691296
@@ -953,7 +953,7 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/WinLose.bank
   Name: WinLose
   StudioPath: bank:/WinLose
-  lastModified: 639206784715598871
+  lastModified: 639206797635813070
   FileSizes:
   - Name: Desktop
     Value: 388448
@@ -1011,7 +1011,7 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: 6453619915132845526}
   cacheVersion: 131860
-  cacheTime: 639206794826584508
+  cacheTime: 639206797635813070
   SerializableEventsDict:
   - key: event:/Cell becomes mid
     index: 0
@@ -1064,7 +1064,7 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/UI.bank
   Name: UI
   StudioPath: bank:/UI
-  lastModified: 639206794826584508
+  lastModified: 639206797635767765
   FileSizes:
   - Name: Desktop
     Value: 45920
@@ -1367,7 +1367,7 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/Energy.bank
   Name: Energy
   StudioPath: bank:/Energy
-  lastModified: 639206784651695030
+  lastModified: 639206797635316194
   FileSizes:
   - Name: Desktop
     Value: 366048
@@ -1510,10 +1510,10 @@ MonoBehaviour:
   Path: Assets/FMOD/GoopCore/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639206784652607927
+  lastModified: 639206797635361330
   FileSizes:
   - Name: Desktop
-    Value: 2078
+    Value: 2148
   Exists: 1
 --- !u!114 &6903952034279453718
 MonoBehaviour:

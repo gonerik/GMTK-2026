@@ -1,4 +1,5 @@
-﻿using CoreLoop.Interfaces;
+﻿using Audio;
+using CoreLoop.Interfaces;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,7 @@ namespace UI
     [RequireComponent(typeof(Canvas))]
     public class MainMenuController : MonoBehaviour
     {
+        [Inject] private readonly MusicService musicService;
         //[Inject] private readonly ISceneLoader sceneLoader;
         [SerializeField] private SettingMenu settingMenu;
         [SerializeField] private Credits credits;
@@ -23,6 +25,7 @@ namespace UI
 
         private void OnEnable()
         {
+            musicService.PlayMenuMusic();
             startButton.onClick.AddListener(Play);
             settingsButton.onClick.AddListener(Settings);
             creditsButton.onClick.AddListener(Credits);

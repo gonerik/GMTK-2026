@@ -10,6 +10,7 @@ namespace Installers
 
         public override void InstallBindings()
         {
+            Container.Bind<MusicService>().AsSingle().NonLazy();
             Container.Bind<IAudioManager>().To<AudioManager>().AsSingle();
         }
     }
