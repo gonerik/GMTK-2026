@@ -15,7 +15,7 @@ MonoBehaviour:
   acidPrefab: {fileID: 0}
   MatingLifetimeAddition:
     _serializedList:
-    - Key: 0
+    - Key: 1
       Value: 0
     - Key: 2
       Value: 10
@@ -41,7 +41,7 @@ MonoBehaviour:
       Value: 30
   MatingEnergyGainAddition:
     _serializedList:
-    - Key: 0
+    - Key: 1
       Value: 0
     - Key: 2
       Value: 10

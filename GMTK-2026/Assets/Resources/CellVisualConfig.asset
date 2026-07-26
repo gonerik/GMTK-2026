@@ -27,17 +27,23 @@ MonoBehaviour:
     - Key: 0
       Value:
         _serializedList:
+        - Key: 0
+          Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
+        - Key: 1
+          Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
+        - Key: 2
+          Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
+        - Key: 3
+          Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
+    - Key: 1
+      Value:
+        _serializedList:
         - Key: 1
           Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
         - Key: 2
           Value: {fileID: 115284722581305891, guid: 5b260d0e66b31654bbb370dff23cfc45, type: 3}
         - Key: 3
           Value: {fileID: 7098014285626607948, guid: c4dfcbdcc1bf6fd4282e090d8f96b164, type: 3}
-    - Key: 1
-      Value:
-        _serializedList:
-        - Key: 0
-          Value: {fileID: 7162413166955850271, guid: 44c476354c24b66489c67bc7505b6f39, type: 3}
     - Key: 2
       Value:
         _serializedList:

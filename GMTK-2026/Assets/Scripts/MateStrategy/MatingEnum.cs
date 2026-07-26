@@ -2,8 +2,8 @@
 {
     public enum MatingEnum
     {
-        Default,
         Acid,
+        Default,
         Agressive,
         Horny
     }
