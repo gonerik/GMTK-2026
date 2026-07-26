@@ -36,7 +36,7 @@ namespace UI
 
         public void Play()
         { 
-            SceneManager.LoadScene("Final");
+            SceneManager.LoadScene("SampleScene");
         }
         
         public void Settings()

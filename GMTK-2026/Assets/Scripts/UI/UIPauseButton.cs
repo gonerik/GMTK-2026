@@ -1,4 +1,5 @@
 using System;
+using Audio.Interfaces;
 using CoreLoop.Interfaces;
 using GameStateMachine.States;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace UI
 {
     public class UIPauseButton : MonoBehaviour
     {
+        [Inject] private readonly IAudioManager audioManager;
         [Inject] IGameStateMachine gameStateMachine;
         [Inject] InMenuState.Factory inMenuState;
         [Inject] GameLoopState.Factory gameLoopState;
@@ -22,16 +24,30 @@ namespace UI
         
         [SerializeField] private Button backToMenuButton;
         [SerializeField] private Button resetLevelButton;
+        [SerializeField] private Slider masterVolumeSlider;
+        
+        private const string MasterVolumeKey = "MasterVolume";
 
         private void Start()
         {
             buttonImage = GetComponent<Image>();
+            float masterVolume = PlayerPrefs.GetFloat(MasterVolumeKey, 1f);
+            
+            masterVolumeSlider.value = masterVolume;
         }
 
         private void OnEnable()
         {
             backToMenuButton.onClick.AddListener(OnBackToMenuClicked);
             resetLevelButton.onClick.AddListener(OnResetLevelClicked);
+            masterVolumeSlider.onValueChanged.AddListener(OnMasterVolumeChanged);
+        }
+
+        private void OnDisable()
+        {
+            backToMenuButton.onClick.RemoveListener(OnBackToMenuClicked);
+            resetLevelButton.onClick.RemoveListener(OnResetLevelClicked);
+            masterVolumeSlider.onValueChanged.RemoveListener(OnMasterVolumeChanged);
         }
 
         private void OnResetLevelClicked()
@@ -68,6 +84,12 @@ namespace UI
             buttonImage.sprite = pauseSprite; 
             gameStateMachine.ChangeState(gameLoopState.Create());
             OnGamePaused?.Invoke(false);
+        }
+        
+        private void OnMasterVolumeChanged(float value)
+        {
+            audioManager.SetMasterVolume(value);
+            PlayerPrefs.SetFloat(MasterVolumeKey, value);
         }
     }
 }
