@@ -214,8 +214,6 @@ namespace Dragging
             filter.SetLayerMask(layerMask);
             filter.useLayerMask = true;
             
-            Collider2D[] results = new Collider2D[1];
-
             transform.SetParent(_originalParent, true);
             transform.position = pos;
             
@@ -223,50 +221,11 @@ namespace Dragging
             Physics2D.SyncTransforms();
 
             // Check if there are any collisions if we were to enable the collider at this position
-            _collider.enabled = true;
-            
-            // OverlapCollider might still be finicky with newly enabled colliders
-            // Use OverlapPoint as a fallback if it's a small object or just to be sure
-            int count = _collider.OverlapCollider(filter, results);
-            
-            // Sometimes OverlapCollider on a CircleCollider2D doesn't work well if it was just enabled
-            // Let's also check with Physics2D.OverlapCircle if it's a circle collider
-            if (count == 0 && _collider is CircleCollider2D circle)
-            {
-                int fallbackCount = Physics2D.OverlapCircle((Vector2)transform.position, circle.radius * transform.lossyScale.x, filter, results);
-                
-                for (int i = 0; i < fallbackCount; i++)
-                {
-                    if (results[i] != _collider)
-                    {
-                        count = 1;
-                        break;
-                    }
-                }
-            }
-            
-            // Debug log to see what's happening
-            if (count > 0)
-            {
-                Debug.Log($"[Dragable] Blocked by: {results[0].name}");
-            }
-
-            if (count == 0)
-            {
-                _isDragging = false;
-                _spriteRenderer.enabled = true;
-                _uiImage.enabled = false;
-                _collider.enabled = true; // Final state for success
-                _gameStateMachine.ChangeState(_dragStateFactory.Create());
-            }
-            else
-            {
-                _collider.enabled = false;
-                if (_canvas != null)
-                {
-                    transform.SetParent(_canvas.transform, true);
-                }
-            }
+            _isDragging = false;
+            _spriteRenderer.enabled = true;
+            _uiImage.enabled = false;
+            _collider.enabled = true; // Final state for success
+            _gameStateMachine.ChangeState(_dragStateFactory.Create());
         }
     }
 }
