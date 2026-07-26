@@ -61,7 +61,7 @@
 	</object>
 	<object class="EventAutomatableProperties" id="{596a0fc6-0f67-4112-b40b-1a04c12d6293}">
 		<property name="triggerCooldown">
-			<value>240</value>
+			<value>260</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{91bd4352-3957-4715-aabe-d395fa944144}" />
@@ -99,6 +99,7 @@
 	<object class="MixerBusPanner" id="{33a4eaa0-fef9-4f19-9a3d-ec11e97afca4}" />
 	<object class="MixerBusEffectChain" id="{8574e82c-196c-40f7-80f4-6e3820d28d62}">
 		<relationship name="effects">
+			<destination>{e7d6eceb-072c-4c56-aebe-95fa43f4eebe}</destination>
 			<destination>{bf5d4e28-00a4-4781-9ac7-e300b4f01f51}</destination>
 		</relationship>
 	</object>
@@ -115,6 +116,14 @@
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{17c0633b-e709-4da2-aac8-360a28cecfd8}" />
+	<object class="MultibandEqEffect" id="{e7d6eceb-072c-4c56-aebe-95fa43f4eebe}">
+		<property name="frequencyA">
+			<value>8308.2002</value>
+		</property>
+		<property name="qualityA">
+			<value>0.612698376</value>
+		</property>
+	</object>
 	<object class="MixerBusFader" id="{bf5d4e28-00a4-4781-9ac7-e300b4f01f51}" />
 	<object class="SingleSound" id="{8ecb0f92-1c0e-4523-a34f-c3a7b3c97e3a}">
 		<relationship name="audioFile">
