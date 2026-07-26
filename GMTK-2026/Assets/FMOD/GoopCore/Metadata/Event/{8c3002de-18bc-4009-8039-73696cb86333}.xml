@@ -60,8 +60,14 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{dfb2aec7-6bf8-4970-a74e-347bdb8d75d1}">
+		<property name="isPersistent">
+			<value>true</value>
+		</property>
+		<property name="maxVoices">
+			<value>20</value>
+		</property>
 		<property name="triggerCooldown">
-			<value>220</value>
+			<value>120</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{678f2667-f4a1-46cf-97a6-699db0f85e04}" />

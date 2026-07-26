@@ -100,7 +100,7 @@
 			<value>14</value>
 		</property>
 		<property name="spawnRate">
-			<value>22</value>
+			<value>150</value>
 		</property>
 		<property name="pitchRandomization">
 			<value>2.10000014</value>

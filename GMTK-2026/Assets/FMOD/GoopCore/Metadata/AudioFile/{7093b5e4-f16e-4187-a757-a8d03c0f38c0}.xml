@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.03.00">
-	<object class="AudioFile" id="{69145760-bd6a-4c7d-9a69-8133e781e9db}">
+	<object class="AudioFile" id="{7093b5e4-f16e-4187-a757-a8d03c0f38c0}">
 		<property name="assetPath">
 			<value>music/mainThemeFinal.flac</value>
 		</property>

@@ -8,10 +8,9 @@ namespace DefaultNamespace.Strategies
     public class SmallSize : ISize
     {
         private const string smallSpawnSound = "event:/Cell appears";
-        private const string mediumSpawnSound = "event:/Cell becomes mid";
-        private const string largeSpawnSound = "event:/Cell becomes big";
         public void Initialize(CellUnit cell)
         {
+            cell.SetSpawnSound(smallSpawnSound);
             cell.AddTargetingRule(view => view.CellSize == CellSize.Acid);
         }
 
@@ -22,8 +21,10 @@ namespace DefaultNamespace.Strategies
 
     public class MediumSize : ISize
     {
+        private const string mediumSpawnSound = "event:/Cell becomes mid";
         public void Initialize(CellUnit cell)
         {
+            cell.SetSpawnSound(mediumSpawnSound);
         }
 
         public void Unsubscribe(CellUnit cell)
@@ -33,6 +34,8 @@ namespace DefaultNamespace.Strategies
 
     public class LargeSize : ISize
     {
+        
+        private const string largeSpawnSound = "event:/Cell becomes big";
         private Acid.Factory acidFactory;
 
         public LargeSize(Acid.Factory acidFactory)
@@ -42,6 +45,7 @@ namespace DefaultNamespace.Strategies
 
         public void Initialize(CellUnit cell)
         {
+            cell.SetSpawnSound(largeSpawnSound);
             cell.OnDie += HandleOnDie;
         }
 

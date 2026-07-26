@@ -267,8 +267,15 @@ MonoBehaviour:
   VirtualChannelSettings: []
   RealChannelSettings: []
   Plugins: []
-  MasterBanks: []
-  Banks: []
+  MasterBanks:
+  - Master
+  Banks:
+  - Cell Interactions
+  - Energy
+  - First Discovery
+  - Tracks
+  - UI
+  - WinLose
   BanksToLoad: []
   LiveUpdatePort: 9264
   EnableMemoryTracking: 0
