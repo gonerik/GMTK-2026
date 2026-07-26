@@ -9,7 +9,6 @@ namespace UI
     public class Win : MonoBehaviour
     {
         [Inject] private SignalBus _signalBus;
-        
         [SerializeField] private Button restartButton;
         [SerializeField] private GameObject panel;
         
@@ -32,7 +31,7 @@ namespace UI
 
         private void OnGameWin()
         {
-            panel.SetActive(true);
+            SceneManager.LoadScene("WinState");
         }
     }
 }

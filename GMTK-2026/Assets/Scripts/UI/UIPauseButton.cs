@@ -3,6 +3,7 @@ using Audio.Interfaces;
 using CoreLoop.Interfaces;
 using GameStateMachine.States;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
@@ -25,6 +26,8 @@ namespace UI
         [SerializeField] private Button backToMenuButton;
         [SerializeField] private Button resetLevelButton;
         [SerializeField] private Slider masterVolumeSlider;
+        
+        // /[Inject] private DefaultActions _defaultActions;
         
         private const string MasterVolumeKey = "MasterVolume";
 
@@ -59,6 +62,7 @@ namespace UI
         {
             SceneManager.LoadScene("MainMenu");
         }
+        
 
         public void PauseGame()
         {
@@ -69,6 +73,14 @@ namespace UI
             else
             {
                 Pause();
+            }
+        }
+        
+        private void Update()
+        {
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                PauseGame();
             }
         }
 
