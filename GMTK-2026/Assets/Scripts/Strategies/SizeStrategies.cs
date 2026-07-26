@@ -7,6 +7,9 @@ namespace DefaultNamespace.Strategies
 {
     public class SmallSize : ISize
     {
+        private const string smallSpawnSound = "event:/Cell appears";
+        private const string mediumSpawnSound = "event:/Cell becomes mid";
+        private const string largeSpawnSound = "event:/Cell becomes big";
         public void Initialize(CellUnit cell)
         {
             cell.AddTargetingRule(view => view.CellSize == CellSize.Acid);

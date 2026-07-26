@@ -26,6 +26,9 @@ namespace Dragging
         private Transform _originalParent;
         private Canvas _canvas;
 
+        private const string PickUpSound = "event:/Pick up";
+        private const string DropSound = "event:/Put Down";
+
         [Inject]
         public void Construct(
             DefaultActions defaultActions,
@@ -189,6 +192,7 @@ namespace Dragging
             ParentStep:
             _spriteRenderer.enabled = false;
             _uiImage.enabled = true;
+            FMODUnity.RuntimeManager.PlayOneShot(PickUpSound);
 
             _originalParent = transform.parent;
             if (_canvas != null)
@@ -253,6 +257,7 @@ namespace Dragging
 
             if (count == 0)
             {
+                FMODUnity.RuntimeManager.PlayOneShot(DropSound);
                 _isDragging = false;
                 _spriteRenderer.enabled = true;
                 _uiImage.enabled = false;

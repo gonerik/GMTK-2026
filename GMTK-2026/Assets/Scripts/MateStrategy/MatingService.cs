@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
+using FMODUnity;
 using Interfaces;
 using UnityEngine;
 using Zenject;
@@ -19,6 +20,7 @@ namespace MateStrategy
 
         private int mutationChance;
         private static readonly int HornyAdditionalSpawnChance = 50;
+        private const string MutateSoundID = "event:/Cell mutates";
 
         [Inject]
         public MatingService(MatingConfig matingConfig, GameObject cellPrefab)
@@ -127,14 +129,17 @@ namespace MateStrategy
             
             if (mutationProbability <= blueMutationChance)
             {
+                FMODUnity.RuntimeManager.PlayOneShot(MutateSoundID);
                 cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Blue, spawnPos);
             }
             else if (mutationProbability <= yellowMutationChance)
             {
+                FMODUnity.RuntimeManager.PlayOneShot(MutateSoundID);
                 cellFactory.Create().Initialize(resultEnum, newSize, DeviationEnum.Yellow, spawnPos);
             }
             else if (mutationProbability <= redMutationChance)
             {
+                FMODUnity.RuntimeManager.PlayOneShot(MutateSoundID);
                 redCellFactory.Create().Initialize(resultEnum, newSize, spawnPos);
             }
             else
@@ -150,8 +155,13 @@ namespace MateStrategy
 
         private MatingEnum DetermineResultingEnum(MatingEnum parent1, MatingEnum parent2)
         {
+            Vector2 probabilityMatrix  = new Vector2();
+            probabilityMatrix.x = matingConfig.GetMatingChanceModifier(parent1);
+            probabilityMatrix.y = matingConfig.GetMatingChanceModifier(parent2);
+            probabilityMatrix.Normalize();
+            probabilityMatrix *= 100;
             int randomIndex = UnityEngine.Random.Range(0, 100);
-            if (randomIndex <= 50)
+            if (randomIndex <= probabilityMatrix.x)
             {
                 return parent1;
             }
