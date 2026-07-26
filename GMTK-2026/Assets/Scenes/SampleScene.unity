@@ -2518,6 +2518,10 @@ PrefabInstance:
       propertyPath: _camera
       value: 
       objectReference: {fileID: 1944804235}
+    - target: {fileID: 9179390668684416749, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
+      propertyPath: cooldownDuration
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
