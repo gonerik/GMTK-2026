@@ -36,7 +36,7 @@ namespace Energy
 
         public void AddEnergy(int amount)
         {
-            energyAmount = (int)MathF.Max(energyAmount + amount, 100);
+            energyAmount = (int)MathF.Min(energyAmount + amount, 100);
             OnEnergyChanged?.Invoke(energyAmount);
             if (energyAmount >= 100)
             {
