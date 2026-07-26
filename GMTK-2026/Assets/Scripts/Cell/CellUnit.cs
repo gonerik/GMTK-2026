@@ -7,6 +7,7 @@ using DefaultNamespace;
 using DefaultNamespace.Zenject;
 using DG.Tweening;
 using Energy;
+using FMODUnity;
 using Interfaces;
 using MateStrategy;
 using UnityEngine;
@@ -40,6 +41,11 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     [Inject] private Acid.Factory acidFactory;
     private IMateStrategy matiStrategy;
 
+    private string appearSound;
+    private const string DieSound = "event:/Cell dies";
+    
+    
+
     [Inject] private NavigationSystem navigationSystem;
 
     private readonly List<Predicate<AIView>> targetingRules = new();
@@ -52,6 +58,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         Initialize(matingEnum, cellSize, DeviationEnum.Default, transform.position);
         navigationSystem.RegisterTarget(this);
         LifeTimeTask().Forget();
+        FMODUnity.RuntimeManager.PlayOneShot(appearSound);
     }
 
     private void FixedUpdate()
@@ -178,7 +185,13 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
             age -= ageRate;
             await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: this.GetCancellationTokenOnDestroy());
         }
+        FMODUnity.RuntimeManager.PlayOneShot(DieSound);
         Destroy();
+    }
+    
+    public void SetSpawnSound(string id)
+    {
+        appearSound = id;
     }
 
     public void Initialize(MatingEnum matingEnum, CellSize cellSize, DeviationEnum deviationEnum, Vector3 position)

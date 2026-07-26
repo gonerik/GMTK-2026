@@ -2218,6 +2218,7 @@ GameObject:
   - component: {fileID: 6986369443407320488}
   - component: {fileID: 2275608664543286783}
   - component: {fileID: 6185779147414671578}
+  - component: {fileID: -5622902503473965891}
   m_Layer: 0
   m_Name: Camera 2
   m_TagString: Untagged
@@ -2343,6 +2344,20 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &-5622902503473965891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6076287995987741860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nonRigidbodyVelocity: 0
+  attenuationObject: {fileID: 0}
 --- !u!1 &6411650870761436885
 GameObject:
   m_ObjectHideFlags: 0
@@ -2355,6 +2370,7 @@ GameObject:
   - component: {fileID: 8798106582807650138}
   - component: {fileID: 8532518655110420205}
   - component: {fileID: 5066704203611928447}
+  - component: {fileID: 7741427264989963484}
   m_Layer: 0
   m_Name: Camera 1
   m_TagString: Untagged
@@ -2480,6 +2496,20 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &7741427264989963484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6411650870761436885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nonRigidbodyVelocity: 0
+  attenuationObject: {fileID: 0}
 --- !u!1 &6435336923563690439
 GameObject:
   m_ObjectHideFlags: 0
@@ -2752,6 +2782,7 @@ GameObject:
   - component: {fileID: 2619879137745393497}
   - component: {fileID: 1966472562641506941}
   - component: {fileID: 369174168415330710}
+  - component: {fileID: -7810430721436682432}
   m_Layer: 0
   m_Name: Camera 3
   m_TagString: Untagged
@@ -2877,6 +2908,20 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &-7810430721436682432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6896170943217397835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nonRigidbodyVelocity: 0
+  attenuationObject: {fileID: 0}
 --- !u!1 &6990149559368040597
 GameObject:
   m_ObjectHideFlags: 0

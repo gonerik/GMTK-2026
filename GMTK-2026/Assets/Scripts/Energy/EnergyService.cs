@@ -20,6 +20,7 @@ namespace Energy
         [Inject] private SignalBus signalBus;
         private int energyAmount;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private const string LoseSound = "event:/Lose";
         
         public EnergyService()
         {
@@ -52,6 +53,7 @@ namespace Energy
                 OnEnergyChanged?.Invoke(energyAmount);
                 if (energyAmount <= 0)
                 {
+                    FMODUnity.RuntimeManager.PlayOneShot(LoseSound);
                     signalBus.Fire(new OnEnergyLostSignal());
                 }
             }

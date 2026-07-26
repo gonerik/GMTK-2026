@@ -23,6 +23,9 @@ public class CameraZoomController : ITickable, IInitializable
     private Camera mainCamera;
     private CinemachineVirtualCamera lastActiveCamera;
     private Dictionary<CinemachineVirtualCamera, Vector3> initialPositions;
+    
+    private const string ZoomInSound = "event:/ZoomIn";
+    private const string ZoomOutSound = "event:/ZoomOut";
 
     public void Initialize()
     {
@@ -90,6 +93,7 @@ public class CameraZoomController : ITickable, IInitializable
 
         if (scroll > 0) // Zooming in
         {
+            FMODUnity.RuntimeManager.PlayOneShot(ZoomInSound);
             Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPos.z = activeCamera.transform.position.z;
             
@@ -101,6 +105,7 @@ public class CameraZoomController : ITickable, IInitializable
         }
         else // Zooming out
         {
+            FMODUnity.RuntimeManager.PlayOneShot(ZoomOutSound);
             // When zooming out, pull back towards local 0,0,0 (parent's position or initial position if no parent)
             float zoomPercent = (targetOrthoSize - minOrthoSize) / (maxOrthoSize - minOrthoSize);
             Vector3 localZeroWorldPos = activeCamera.transform.parent.position;
