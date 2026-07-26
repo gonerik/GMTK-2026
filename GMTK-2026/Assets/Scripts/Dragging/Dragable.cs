@@ -26,6 +26,9 @@ namespace Dragging
         private Transform _originalParent;
         private Canvas _canvas;
 
+        private const string PickUpSound = "event:/Pick up";
+        private const string DropSound = "event:/Put Down";
+
         [Inject]
         public void Construct(
             DefaultActions defaultActions,
@@ -189,6 +192,7 @@ namespace Dragging
             ParentStep:
             _spriteRenderer.enabled = false;
             _uiImage.enabled = true;
+            FMODUnity.RuntimeManager.PlayOneShot(PickUpSound);
 
             _originalParent = transform.parent;
             if (_canvas != null)
@@ -214,6 +218,8 @@ namespace Dragging
             filter.SetLayerMask(layerMask);
             filter.useLayerMask = true;
             
+            Collider2D[] results = new Collider2D[1];
+
             transform.SetParent(_originalParent, true);
             transform.position = pos;
             
@@ -222,6 +228,7 @@ namespace Dragging
 
             // Check if there are any collisions if we were to enable the collider at this position
             _isDragging = false;
+            FMODUnity.RuntimeManager.PlayOneShot(DropSound);
             _spriteRenderer.enabled = true;
             _uiImage.enabled = false;
             _collider.enabled = true; // Final state for success

@@ -1,5 +1,6 @@
 ﻿using CoreLoop.Interfaces;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
@@ -17,6 +18,8 @@ namespace UI
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button creditsButton;
         [SerializeField] private Button quitButton;
+        
+        [SerializeField] private PlayableDirector director;
 
         private void OnEnable()
         {
@@ -36,7 +39,7 @@ namespace UI
 
         public void Play()
         { 
-            SceneManager.LoadScene("SampleScene");
+            director.Play();
         }
         
         public void Settings()

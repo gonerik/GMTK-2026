@@ -62,6 +62,7 @@ namespace Cell.Selectable
 
         private void StopSelectionLoop()
         {
+            OnSelected?.Invoke(new SelectionInfo());
             _cts?.Cancel();
             _cts?.Dispose();
             _cts = null;
