@@ -219,10 +219,11 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         targetingRules.Clear();
         UnsubscribeFromStrategies();
 
+        sizeStrategy = CellStrategyFactory.CreateSize(cellSize, acidFactory);
         matiStrategy = CellStrategyFactory.CreateMateStrategy(matingEnum);
         cellColor = CellStrategyFactory.CreateColor(colorType);
         cellMembrane = CellStrategyFactory.CreateMembrane(membraneType);
-        sizeStrategy = CellStrategyFactory.CreateSize(cellSize, acidFactory);
+        
 
         cellColor.Initialize(this);
         cellMembrane.Initialize(this);

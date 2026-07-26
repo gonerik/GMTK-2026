@@ -87,7 +87,7 @@ namespace MateStrategy
             CellSize newSize = mate1.CellSize + 1;
             Vector3 spawnPos = (mate1.GetTargetPosition() + mate2.GetTargetPosition()) / 2f;
 
-            if (mate1.GetMatingEnum() == MatingEnum.Agressive || mate2.GetMatingEnum() == MatingEnum.Agressive)
+            if (mate1.GetMatingEnum() == MatingEnum.Agressive && mate2.GetMatingEnum() == MatingEnum.Agressive)
             {
                 resultEnum = MatingEnum.Horny;
             }
