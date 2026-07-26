@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb842f4745044fe4a74d2fd36c0b61aa, type: 3}
   m_Name: CellLifetimeConfig
   m_EditorClassIdentifier: 
+  acidPrefab: {fileID: 0}
   MatingLifetimeAddition:
     _serializedList:
     - Key: 0
@@ -23,11 +24,11 @@ MonoBehaviour:
   SizeLifetimeAddition:
     _serializedList:
     - Key: 1
-      Value: 20
+      Value: 30
     - Key: 2
-      Value: 40
+      Value: 25
     - Key: 3
-      Value: 60
+      Value: 20
   DeviationLifetimeAddition:
     _serializedList:
     - Key: 0
@@ -35,7 +36,7 @@ MonoBehaviour:
     - Key: 1
       Value: 60
     - Key: 2
-      Value: 10
+      Value: 0
     - Key: 3
       Value: 30
   MatingEnergyGainAddition:
@@ -49,11 +50,11 @@ MonoBehaviour:
   SizeEnergyGainAddition:
     _serializedList:
     - Key: 1
-      Value: 5
+      Value: 2
     - Key: 2
-      Value: 10
+      Value: 4
     - Key: 3
-      Value: 15
+      Value: 8
   DeviationEnergyGainAddition:
     _serializedList:
     - Key: 0
