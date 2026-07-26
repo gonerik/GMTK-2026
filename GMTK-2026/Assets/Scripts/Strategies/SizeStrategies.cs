@@ -58,8 +58,15 @@ namespace DefaultNamespace.Strategies
         {
             if (acidFactory != null)
             {
-                var acid = acidFactory.Create();
-                acid.transform.position = cell.transform.position;
+                int count = (int)cell.MatingEnum;
+                float randomOffset = Random.Range(0f, 360f);
+                for (int i = 0; i < count; i++)
+                {
+                    var acid = acidFactory.Create();
+                    float angle = randomOffset + i * (360f / count);
+                    Vector3 offset = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0);
+                    acid.transform.position = cell.transform.position + offset;
+                }
             }
         }
     }
