@@ -57,11 +57,18 @@ namespace MateStrategy
             {
                 return;
             }
-
+            
             mate1.IsMating = true;
             mate2.IsMating = true;
             
-            
+            if (mate1.GetView().CellSize == CellSize.Small && mate2.GetView().CellSize == CellSize.Acid && mate1.GetMatingEnum() == MatingEnum.Default)
+            {
+                CreateAndInitializeCell(mate1.GetMatingEnum(), mate1.CellSize, mate1.GetTargetPosition());
+            }
+            if(mate2.GetView().CellSize == CellSize.Small && mate1.GetView().CellSize == CellSize.Acid && mate2.GetMatingEnum() == MatingEnum.Default)
+            {
+                CreateAndInitializeCell(mate2.GetMatingEnum(), mate2.CellSize, mate2.GetTargetPosition());
+            }
 
             MatingEnum resultEnum = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
             CellSize newSize = mate1.CellSize + 1;

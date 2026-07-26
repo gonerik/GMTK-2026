@@ -24,7 +24,7 @@ namespace Cell.Selectable
             Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
             Collider2D hit = Physics2D.OverlapCircle(worldPos, 0.1f);
 
-            if (hit is ISelectable selectable)
+            if (hit != null && hit.TryGetComponent<ISelectable>(out var selectable))
             {
                 OnSelected?.Invoke(selectable.GetSelectionInfo());
             }

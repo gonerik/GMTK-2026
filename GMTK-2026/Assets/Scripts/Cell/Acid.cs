@@ -10,6 +10,10 @@ namespace DefaultNamespace
 {
     public class Acid : MonoBehaviour, IMate
     {
+        public class Factory : PlaceholderFactory<Acid>
+        {
+        }
+
         public CellSize CellSize => CellSize.Acid;
         public float DetectionRange => 0f;
         
@@ -26,11 +30,6 @@ namespace DefaultNamespace
         private void Start()
         {
             navigationSystem.RegisterTarget(this);
-        }
-
-        private void OnDestroy()
-        {
-            navigationSystem.UnregisterTarget(this);
         }
 
         private void OnCollisionEnter2D(Collision2D other)
@@ -56,7 +55,7 @@ namespace DefaultNamespace
 
         public bool CanTarget(ITarget target)
         {
-            return CellSize - 1 == target.GetView().CellSize;
+            return false;
         }
 
         public Vector3 GetTargetPosition()
@@ -79,6 +78,7 @@ namespace DefaultNamespace
         }
         public void Destroy()
         {
+            navigationSystem.UnregisterTarget(this);
             Destroy(gameObject);
         }
     }
