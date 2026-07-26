@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="EncodableAsset" id="{67243cad-1cf9-474f-aeb2-24d4ce82107c}">
+		<property name="assetPath">
+			<value>SFX/Zooms/</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{b3e9d1dd-2310-447a-9bbe-432259079d5f}</destination>
+		</relationship>
+	</object>
+</objects>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{2dab2fd3-75a5-4d62-b46c-b1a5d8d2c4e4}">
+		<property name="assetPath">
+			<value>SFX/Zooms/zin1.mp3</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.192</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{b3e9d1dd-2310-447a-9bbe-432259079d5f}</destination>
+		</relationship>
+	</object>
+</objects>
