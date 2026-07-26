@@ -1,5 +1,6 @@
 ﻿using CoreLoop.Interfaces;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 
@@ -34,7 +35,7 @@ namespace UI
 
         public void Play()
         { 
-            //sceneLoader.LoadCinematicScene("IntroCinematic");
+            SceneManager.LoadScene("Final");
         }
         
         public void Settings()
