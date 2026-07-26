@@ -40,7 +40,6 @@ namespace UI
         public void Play()
         { 
             director.Play();
-            //SceneManager.LoadScene("Final");
         }
         
         public void Settings()
