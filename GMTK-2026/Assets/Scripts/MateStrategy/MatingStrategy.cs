@@ -6,7 +6,7 @@ namespace DefaultNamespace
     {
         public void Initialize(CellUnit cell)
         {
-            cell.AddTargetingRule(x => false);
+            cell.SetVisionRange(0);
         }
 
         public void Unsubscribe(CellUnit cell)
