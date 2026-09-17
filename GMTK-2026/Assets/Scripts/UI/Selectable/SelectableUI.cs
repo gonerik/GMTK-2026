@@ -36,6 +36,11 @@ namespace Cell.Selectable
             EnergyText.text = $"Energy Gain: {selectionInfo.EnergyAmount}";
             SpeedText.text = $"Speed: {selectionInfo.speed}";
             
+            if (selectionInfo.HasPaired)
+            {
+                LifetimeText.text += "  (spent)";
+            }
+
             if (selectionInfo.MatingEnum != MatingEnum.Acid)
             {
                 var image = new GameObject("MatingIcon").AddComponent<Image>();

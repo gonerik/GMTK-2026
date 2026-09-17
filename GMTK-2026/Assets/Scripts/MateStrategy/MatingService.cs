@@ -14,10 +14,14 @@ namespace MateStrategy
         [Inject] private CellUnit.Factory cellFactory;
         [Inject] private RedCell.Factory redCellFactory;
         [Inject] private MatingProbabilities matingProbabilities;
+        [Inject] private Acid.Factory acidFactory;
 
         private int mutationChance;
         private static readonly int HornyAdditionalSpawnChance = 50;
         private const string MutateSoundID = "event:/Cell mutates";
+        // Deliberate reuse: GoopCore.fspro has no acid event yet. A separate constant so a dedicated
+        // event can be swapped in here without disturbing deviation-mutation audio.
+        private const string SecretionSoundID = "event:/Cell mutates";
 
         [Inject]
         public MatingService(MatingConfig matingConfig, GameObject cellPrefab)
@@ -89,6 +93,7 @@ namespace MateStrategy
 
             if (mate1.CellSize == CellSize.Large || mate2.CellSize == CellSize.Large)
             {
+                TrySecreteFromPairing(mate1, mate2);
                 return;
             }
             
@@ -136,6 +141,85 @@ namespace MateStrategy
             }
             mate1.Destroy();
             mate2.Destroy();
+        }
+
+        // Two Large cells of the same strain that touch secrete Acid, once per cell. This replaces
+        // the old "Large cell dies -> drops Acid" hook that used to live in LargeSize.HandleOnDie.
+        // Neither cell is destroyed, and IsMating is deliberately left alone: RedCell.OnCollisionEnter2D
+        // skips cells whose IsMating is set, so latching it here would make paired cells predator-proof.
+        private void TrySecreteFromPairing(IMate mate1, IMate mate2)
+        {
+            if (!(mate1 is CellUnit cell1) || !(mate2 is CellUnit cell2))
+            {
+                return;
+            }
+
+            if (cell1.CellSize != CellSize.Large || cell2.CellSize != CellSize.Large)
+            {
+                return;
+            }
+
+            if (cell1.MatingEnum != cell2.MatingEnum || cell1.MatingEnum == MatingEnum.Acid)
+            {
+                return;
+            }
+
+            if (cell1.Deviation != DeviationEnum.Default || cell2.Deviation != DeviationEnum.Default)
+            {
+                return;
+            }
+
+            // The only touch that yields nothing is one between two cells that have both already
+            // paired. Latching both flags here is also what stops Unity's second OnCollisionEnter2D
+            // callback - the one raised on the other collider - from secreting a second time.
+            if (cell1.HasPaired && cell2.HasPaired)
+            {
+                return;
+            }
+
+            cell1.MarkPaired();
+            cell2.MarkPaired();
+
+            Vector3 spawnPos = (cell1.GetTargetPosition() + cell2.GetTargetPosition()) / 2f;
+            SecreteAcid(cell1.MatingEnum, spawnPos);
+            FMODUnity.RuntimeManager.PlayOneShot(SecretionSoundID);
+        }
+
+        // Extension seam for Acid variants. Every strain resolves to the one bound Acid prefab today;
+        // the planned split - one Acid promoting Default -> Agressive, a second promoting
+        // Agressive -> Horny - keys on exactly this strain, because the secreting cell's strain is the
+        // strain its Acid should promote. Adding a variant is a case here plus a MatingInstaller binding.
+        private void SecreteAcid(MatingEnum strain, Vector3 at)
+        {
+            int count;
+            switch (strain)
+            {
+                case MatingEnum.Default:
+                    count = 1;
+                    break;
+                case MatingEnum.Agressive:
+                    count = 1;
+                    break;
+                case MatingEnum.Horny:
+                    count = 2;
+                    break;
+                default:
+                    return;
+            }
+
+            if (count == 1)
+            {
+                acidFactory.Create().transform.position = at;
+                return;
+            }
+
+            float randomOffset = UnityEngine.Random.Range(0f, 360f);
+            for (int i = 0; i < count; i++)
+            {
+                float angle = randomOffset + i * (360f / count);
+                Vector3 offset = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0);
+                acidFactory.Create().transform.position = at + offset;
+            }
         }
 
         private void HandleMutationAndCreation(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos, DeviationEnum parent1Deviation, DeviationEnum parent2Deviation)

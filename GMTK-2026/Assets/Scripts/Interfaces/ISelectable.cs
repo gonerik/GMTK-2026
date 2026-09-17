@@ -12,6 +12,7 @@ namespace Interfaces
         public float speed;
         public float Age;
         public int MaxAge;
+        public bool HasPaired;
     }
     public interface ISelectable
     {

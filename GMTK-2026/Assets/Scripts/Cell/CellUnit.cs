@@ -38,7 +38,6 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     private SpriteRenderer spriteRenderer;
     [Inject] private CellLifetimeConfig lifetimeConfig;
     [Inject] private MatingService matingService;
-    [Inject] private Acid.Factory acidFactory;
     private IMateStrategy matiStrategy;
 
     private string appearSound;
@@ -115,6 +114,13 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     public bool IsMating { get; set; }
 
+    // Latched once this cell has taken part in a Large-cell pairing. Never cleared, and deliberately
+    // kept out of InitializeStrategies so re-expressing the genome cannot reset it. Distinct from
+    // IsMating, which means "destruction pending" and would make the cell immune to RedCell.
+    public bool HasPaired { get; private set; }
+
+    public void MarkPaired() => HasPaired = true;
+
     public virtual void Mate(IMate partner)
     {
         matingService.Mate(this, partner);
@@ -154,7 +160,8 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         {
             CellSize = this.CellSize,
             MatingEnum = GetMatingEnum(),
-            Deviation = this.Deviation
+            Deviation = this.Deviation,
+            HasPaired = this.HasPaired
         };
     }
 
@@ -215,7 +222,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         targetingRules.Clear();
         UnsubscribeFromStrategies();
 
-        sizeStrategy = CellStrategyFactory.CreateSize(cellSize, acidFactory);
+        sizeStrategy = CellStrategyFactory.CreateSize(cellSize);
         matiStrategy = CellStrategyFactory.CreateMateStrategy(matingEnum);
         cellColor = CellStrategyFactory.CreateColor(colorType);
         cellMembrane = CellStrategyFactory.CreateMembrane(membraneType);
@@ -286,7 +293,8 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
             EnergyAmount = EnergyAmount,
             speed = moveSpeed,
             Age = age,
-            MaxAge = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation)
+            MaxAge = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation),
+            HasPaired = HasPaired
         };
     }
 }

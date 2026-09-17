@@ -50,7 +50,7 @@ namespace DefaultNamespace
             }
         }
 
-        public static ISize CreateSize(CellSize sizeType, Acid.Factory acidFactory)
+        public static ISize CreateSize(CellSize sizeType)
         {
             switch (sizeType)
             {
@@ -59,7 +59,7 @@ namespace DefaultNamespace
                 case CellSize.Medium:
                     return new Strategies.MediumSize();
                 case CellSize.Large:
-                    return new Strategies.LargeSize(acidFactory);
+                    return new Strategies.LargeSize();
                 case CellSize.Acid:
                     return new Strategies.MediumSize(); // Acid doesn't use CellUnit usually, but to be safe
                 default:

@@ -24,7 +24,7 @@ namespace Energy
         
         public EnergyService()
         {
-            LeakEnergy(_cts.Token).Forget();
+            //LeakEnergy(_cts.Token).Forget();
             energyAmount = 40;
         }
 

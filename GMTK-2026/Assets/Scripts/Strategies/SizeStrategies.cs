@@ -1,5 +1,6 @@
 ﻿using DefaultNamespace;
 using Interfaces;
+using MateStrategy;
 using UnityEngine;
 using Zenject;
 
@@ -34,40 +35,28 @@ namespace DefaultNamespace.Strategies
 
     public class LargeSize : ISize
     {
-        
         private const string largeSpawnSound = "event:/Cell becomes big";
-        private Acid.Factory acidFactory;
-
-        public LargeSize(Acid.Factory acidFactory)
-        {
-            this.acidFactory = acidFactory;
-        }
 
         public void Initialize(CellUnit cell)
         {
             cell.SetSpawnSound(largeSpawnSound);
-            cell.OnDie += HandleOnDie;
+
+            // Ordinary cells never hunt: DefaultMatingStrategy zeroes their vision range, so they
+            // wander and let hunters come to them. Agressive and Horny cells look for a same-strain
+            // partner to pair with. The closure reads cell.HasPaired live, so a cell stops hunting
+            // the moment it secretes, with no re-initialisation.
+            if (cell.MatingEnum == MatingEnum.Agressive || cell.MatingEnum == MatingEnum.Horny)
+            {
+                cell.AddTargetingRule(view => !cell.HasPaired
+                                              && view.CellSize == CellSize.Large
+                                              && view.MatingEnum == cell.MatingEnum
+                                              && view.Deviation == DeviationEnum.Default
+                                              && !view.HasPaired);
+            }
         }
 
         public void Unsubscribe(CellUnit cell)
         {
-            cell.OnDie -= HandleOnDie;
-        }
-
-        private void HandleOnDie(CellUnit cell)
-        {
-            if (acidFactory != null)
-            {
-                int count = (int)cell.MatingEnum;
-                float randomOffset = Random.Range(0f, 360f);
-                for (int i = 0; i < count; i++)
-                {
-                    var acid = acidFactory.Create();
-                    float angle = randomOffset + i * (360f / count);
-                    Vector3 offset = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0);
-                    acid.transform.position = cell.transform.position + offset;
-                }
-            }
         }
     }
 }
