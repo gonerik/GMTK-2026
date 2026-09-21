@@ -49,8 +49,8 @@
                     "id": "6a5f4bd6-223a-4f44-94b9-be6456f08c02",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
+                    "interactions": "Press(behavior=1)",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "PlaceDefaultCell",

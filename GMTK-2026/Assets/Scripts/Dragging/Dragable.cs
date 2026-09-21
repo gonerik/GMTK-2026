@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using CoreLoop.Interfaces;
-using GameStateMachine.States;
-using Interfaces;
+﻿using Interfaces;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Dragging
 {
+    // The presentation half of dragging: swaps the cell's sprite for a canvas image while it is carried and
+    // restores it on drop. DragController owns input, picking, destinations and the drag states.
     public class Dragable : MonoBehaviour, IDragable
     {
         private Collider2D _collider;
@@ -18,52 +14,16 @@ namespace Dragging
         private Image _uiImage;
 
         private Camera _mainCamera;
-        private DefaultActions _defaultActions;
-        private IGameStateMachine _gameStateMachine;
-        private DragState.Factory _dragStateFactory;
-        private PlaceDraggedState.Factory _placeDraggedStateFactory;
-        private bool _isDragging;
         private Transform _originalParent;
         private Canvas _canvas;
 
         private const string PickUpSound = "event:/Pick up";
         private const string DropSound = "event:/Put Down";
 
-        private Texture2D _cursorTexture;
-        private const string CursorPath = "Assets/Art/UI/icon_tweezersIdle.png";
-        
-        [Inject]
-        public void Construct(
-            DefaultActions defaultActions,
-            IGameStateMachine gameStateMachine,
-            DragState.Factory dragStateFactory,
-            PlaceDraggedState.Factory placeDraggedStateFactory)
-        {
-            _defaultActions = defaultActions;
-            _gameStateMachine = gameStateMachine;
-            _dragStateFactory = dragStateFactory;
-            _placeDraggedStateFactory = placeDraggedStateFactory;
-        }
-
         private void Awake()
         {
             _mainCamera = Camera.main;
             _canvas = Object.FindAnyObjectByType<Canvas>();
-            LoadCursorTexture();
-        }
-
-        private void LoadCursorTexture()
-        {
-            if (System.IO.File.Exists(CursorPath))
-            {
-                byte[] fileData = System.IO.File.ReadAllBytes(CursorPath);
-                _cursorTexture = new Texture2D(2, 2);
-                _cursorTexture.LoadImage(fileData);
-            }
-            else
-            {
-                Debug.LogError($"Cursor texture not found at path: {CursorPath}");
-            }
         }
 
         private void Start()
@@ -72,107 +32,18 @@ namespace Dragging
             _uiImage = GetComponent<Image>();
         }
 
-        private void OnEnable()
-        {
-            if (_defaultActions != null)
-            {
-                _defaultActions.Level.Drag.performed += OnDragPerformed;
-                _defaultActions.Level.PlaceDragged.performed += OnPlacePerformed;
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (_defaultActions != null)
-            {
-                _defaultActions.Level.Drag.performed -= OnDragPerformed;
-                _defaultActions.Level.PlaceDragged.performed -= OnPlacePerformed;
-            }
-        }
-
-        private void Update()
-        {
-            if (_isDragging)
-            {
-                Vector2 mousePos = Mouse.current.position.ReadValue();
-                
-                if (_canvas != null && _canvas.renderMode == RenderMode.ScreenSpaceOverlay)
-                {
-                    HandleDrag(mousePos);
-                }
-                else
-                {
-                    Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10f));
-                    HandleDrag(worldMousePos);
-                }
-            }
-        }
-
-        private void OnDragPerformed(InputAction.CallbackContext context)
-        {
-            if (_isDragging) return;
-
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Vector2 worldPos = _mainCamera.ScreenToWorldPoint(mousePos);
-            Collider2D hit = Physics2D.OverlapCircle(worldPos, 0.1f);
-
-            if (hit != null && hit.gameObject == gameObject)
-            {
-                Pickup();
-            }
-        }
-
-        private void OnPlacePerformed(InputAction.CallbackContext context)
-        {
-            if (!_isDragging) return;
-
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            
-            // Check for UI destinations first
-            if (UnityEngine.EventSystems.EventSystem.current != null)
-            {
-                var eventData = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current);
-                eventData.position = mousePos;
-                var results = new List<UnityEngine.EventSystems.RaycastResult>();
-                UnityEngine.EventSystems.EventSystem.current.RaycastAll(eventData, results);
-
-                foreach (var result in results)
-                {
-                    if (result.gameObject.TryGetComponent<IDragDestination>(out var uiDestination))
-                    {
-                        uiDestination.ExecuteDrag(this);
-                        return;
-                    }
-                }
-            }
-
-            Vector2 worldPos = _mainCamera.ScreenToWorldPoint(mousePos);
-            
-            // Then check for world-space IDragDestination
-            Collider2D[] hits = Physics2D.OverlapCircleAll(worldPos, 0.1f);
-            foreach (var hit in hits)
-            {
-                if (hit.TryGetComponent<IDragDestination>(out var destination))
-                {
-                    destination.ExecuteDrag(this);
-                    return;
-                }
-            }
-        }
-
         public void Pickup()
         {
-            _isDragging = true;
             _collider.enabled = false;
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            
+
             // Sync UI Image size with SpriteRenderer's visual size
             if (_spriteRenderer != null && _uiImage != null)
             {
                 _uiImage.sprite = _spriteRenderer.sprite;
                 _uiImage.color = _spriteRenderer.color;
                 _uiImage.SetNativeSize();
-                
+
                 // Calculate world size of the sprite
                 Vector2 spriteSize = _spriteRenderer.sprite.bounds.size;
                 Vector3 worldScale = _spriteRenderer.transform.lossyScale;
@@ -197,7 +68,7 @@ namespace Dragging
                             _uiImage.rectTransform.sizeDelta = new Vector2(Mathf.Abs(screenPos1.x - screenPos0.x), Mathf.Abs(screenPos1.y - screenPos0.y));
                             goto ParentStep;
                         }
-                        
+
                         _uiImage.rectTransform.sizeDelta = worldSize * unitsToPixels;
                     }
                     else
@@ -217,42 +88,45 @@ namespace Dragging
             {
                 transform.SetParent(_canvas.transform, true);
             }
-            
-            Cursor.SetCursor(_cursorTexture, Vector2.zero, CursorMode.Auto);
-            _gameStateMachine.ChangeState(_placeDraggedStateFactory.Create());
         }
 
-        public void HandleDrag(Vector3 pos)
+        // Follows the pointer. While carried the cell lives under the canvas, so an overlay canvas wants the
+        // raw screen position and anything else wants it converted to world space.
+        public void HandleDrag(Vector3 screenPos)
         {
-            transform.position = pos;
+            if (_canvas != null && _canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                transform.position = screenPos;
+            }
+            else
+            {
+                transform.position = _mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
+            }
         }
 
         public void Drop(Vector3 pos)
         {
             int petriDishLayer = LayerMask.NameToLayer("PetriDish");
             int layerMask = ~(1 << petriDishLayer);
-            
+
             ContactFilter2D filter = new ContactFilter2D();
             filter.useTriggers = true;
             filter.SetLayerMask(layerMask);
             filter.useLayerMask = true;
-            
+
             Collider2D[] results = new Collider2D[1];
 
             transform.SetParent(_originalParent, true);
             transform.position = pos;
-            
+
             // Force physics update to ensure the collider is at the correct position before checking
             Physics2D.SyncTransforms();
 
             // Check if there are any collisions if we were to enable the collider at this position
-            _isDragging = false;
             FMODUnity.RuntimeManager.PlayOneShot(DropSound);
             _spriteRenderer.enabled = true;
             _uiImage.enabled = false;
             _collider.enabled = true; // Final state for success
-            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            _gameStateMachine.ChangeState(_dragStateFactory.Create());
         }
     }
 }

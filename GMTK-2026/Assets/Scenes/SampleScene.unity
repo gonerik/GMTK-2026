@@ -444,6 +444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   globalTimerPrefab: {fileID: -4479393231557173206, guid: 47ef5ebe738256b42991ceffa5d23507, type: 3}
+  dragCursor: {fileID: 2800000, guid: 94e2e881fadd7c24cb4af4447866c8bf, type: 3}
 --- !u!114 &416343248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3083,6 +3084,63 @@ MonoBehaviour:
   _useSceneContext: 1
   _context: {fileID: 416343248}
   _bindType: 0
+--- !u!1001 &1986546178
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2715200649326307395, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_Name
+      value: HornyAcid
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.4502931
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -58.840603
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7357886797433894863, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}
 --- !u!1 &2019811357
 GameObject:
   m_ObjectHideFlags: 0
@@ -3375,3 +3433,4 @@ SceneRoots:
   - {fileID: 416343249}
   - {fileID: 1144253716}
   - {fileID: 309073844}
+  - {fileID: 1986546178}
