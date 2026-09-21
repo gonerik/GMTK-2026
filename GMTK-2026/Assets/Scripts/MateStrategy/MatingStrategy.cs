@@ -24,9 +24,10 @@ namespace DefaultNamespace
                 cell.AddTargetingRule(x => x.Deviation != DeviationEnum.Red && x.CellSize == cell.GetView().CellSize);
                 return;
             }
+            // Only chase partners this cell can actually mate with: same stage and same strain.
             if(cell.GetView().CellSize != CellSize.Large)
             {
-                cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && x.Deviation != DeviationEnum.Red);
+                cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && x.MatingEnum == cell.MatingEnum && x.Deviation != DeviationEnum.Red);
             }
         }
 
@@ -45,7 +46,8 @@ namespace DefaultNamespace
                 return;
             }
             if(cell.GetView().CellSize == CellSize.Large) return;
-            cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && x.Deviation != DeviationEnum.Red);
+            // Only chase partners this cell can actually mate with: same stage and same strain.
+            cell.AddTargetingRule(x => cell.GetView().CellSize == x.CellSize && x.MatingEnum == cell.MatingEnum && x.Deviation != DeviationEnum.Red);
         }
 
         public void Unsubscribe(CellUnit cell)

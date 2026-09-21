@@ -60,6 +60,12 @@ namespace MateStrategy
                 return;
             }
 
+            // Mating and pairing both happen only within a strain; a cross-strain touch does nothing.
+            if (mate1.GetMatingEnum() != mate2.GetMatingEnum())
+            {
+                return;
+            }
+
             if (mate1.IsMating || mate2.IsMating)
             {
                 return;
@@ -75,23 +81,19 @@ namespace MateStrategy
             mate2.IsMating = true;
             
             
-            MatingEnum resultEnum = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
+            // Offspring always inherit the parents' shared strain; only Acid changes a strain.
+            MatingEnum strain = mate1.GetMatingEnum();
             CellSize newSize = mate1.CellSize + 1;
             Vector3 spawnPos = (mate1.GetTargetPosition() + mate2.GetTargetPosition()) / 2f;
 
-            if (mate1.GetMatingEnum() == MatingEnum.Agressive && mate2.GetMatingEnum() == MatingEnum.Agressive)
-            {
-                resultEnum = MatingEnum.Horny;
-            }
-
+            // One bonus roll per Horny parent - and a Horny cell only ever mates with another Horny.
             if (mate1.GetMatingEnum() == MatingEnum.Horny)
             {
                 int additionalSpawnProbability = UnityEngine.Random.Range(0, 100);
                 if (additionalSpawnProbability <= HornyAdditionalSpawnChance)
                 {
-                    MatingEnum resultEnumHorny1 = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
                     Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
-                    HandleMutationAndCreation(resultEnumHorny1, mate1.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
+                    HandleMutationAndCreation(strain, mate1.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
                 }
             }
             if(mate2.GetMatingEnum() == MatingEnum.Horny)
@@ -99,19 +101,18 @@ namespace MateStrategy
                 int additionalSpawnProbability = UnityEngine.Random.Range(0, 100);
                 if (additionalSpawnProbability <= HornyAdditionalSpawnChance)
                 {
-                    MatingEnum resultEnumHorny2 = DetermineResultingEnum(mate1.GetMatingEnum(), mate2.GetMatingEnum());
                     Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
-                    HandleMutationAndCreation(resultEnumHorny2, mate2.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
+                    HandleMutationAndCreation(strain, mate2.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
                 }
             }
 
-            if (mate1.GetMatingEnum() == MatingEnum.Default && mate2.GetMatingEnum() == MatingEnum.Default)
+            if (strain == MatingEnum.Default)
             {
-                CreateAndInitializeCell(resultEnum, newSize, spawnPos);
+                CreateAndInitializeCell(strain, newSize, spawnPos);
             }
             else
             {
-                HandleMutationAndCreation(resultEnum, newSize, spawnPos, mate1.GetView().Deviation, mate2.GetView().Deviation);
+                HandleMutationAndCreation(strain, newSize, spawnPos, mate1.GetView().Deviation, mate2.GetView().Deviation);
             }
             mate1.Destroy();
             mate2.Destroy();
@@ -287,21 +288,6 @@ namespace MateStrategy
         private void CreateAndInitializeCell(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos)
         {
             cellFactory.Create().Initialize(resultEnum, newSize,  DeviationEnum.Default, spawnPos);
-        }
-
-        private MatingEnum DetermineResultingEnum(MatingEnum parent1, MatingEnum parent2)
-        {
-            Vector2 probabilityMatrix  = new Vector2();
-            probabilityMatrix.x = matingConfig.GetMatingChanceModifier(parent1);
-            probabilityMatrix.y = matingConfig.GetMatingChanceModifier(parent2);
-            probabilityMatrix.Normalize();
-            probabilityMatrix *= 100;
-            int randomIndex = UnityEngine.Random.Range(0, 100);
-            if (randomIndex <= probabilityMatrix.x)
-            {
-                return parent1;
-            }
-            return parent2;
         }
     }
 }
