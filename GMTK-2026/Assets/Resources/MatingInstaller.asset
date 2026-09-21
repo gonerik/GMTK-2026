@@ -16,3 +16,4 @@ MonoBehaviour:
   cellPrefab: {fileID: 5069225946725762616, guid: d0dc676f4a1e7ef428a94835ff320ba0, type: 3}
   redCellPrefab: {fileID: 7119170096039321031, guid: c9222a9d83760e34eb85aab61e35fa2b, type: 3}
   acidPrefab: {fileID: 2715200649326307395, guid: edf160506dd1d094380c8cea83b31f67, type: 3}
+  hornyAcidPrefab: {fileID: 2715200649326307395, guid: 57c171d115d969a41afd8582bc28c1e4, type: 3}

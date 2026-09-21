@@ -12,7 +12,8 @@ namespace DefaultNamespace.Strategies
         public void Initialize(CellUnit cell)
         {
             cell.SetSpawnSound(smallSpawnSound);
-            cell.AddTargetingRule(view => view.CellSize == CellSize.Acid);
+            // Only seek Acid this cell can actually consume; otherwise it parks on the wrong kind.
+            cell.AddTargetingRule(view => view.CellSize == CellSize.Acid && view.AcidConsumes == cell.MatingEnum);
         }
 
         public void Unsubscribe(CellUnit cell)

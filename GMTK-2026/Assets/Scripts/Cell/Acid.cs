@@ -10,9 +10,26 @@ namespace DefaultNamespace
 {
     public class Acid : MonoBehaviour, IMate
     {
-        public class Factory : PlaceholderFactory<Acid>
+        // One factory per Acid kind. Both produce this same class from different prefabs; they need
+        // distinct types because Zenject keys a factory binding on the factory type.
+        public class AgressiveFactory : PlaceholderFactory<Acid>
         {
         }
+
+        public class HornyFactory : PlaceholderFactory<Acid>
+        {
+        }
+
+        // Every Acid serves exactly one transition. Explicit rather than "strain + 1" so that the
+        // ordinal order of MatingEnum is not load-bearing here. The initialisers are the Agressive Acid
+        // recipe, so a prefab with no serialized value for these (the original one) behaves as Agressive Acid.
+        [Tooltip("The strain a Small cell must have to consume this Acid.")]
+        [SerializeField] private MatingEnum consumesStrain = MatingEnum.Default;
+        [Tooltip("The strain the cell is promoted to after consuming it.")]
+        [SerializeField] private MatingEnum grantsStrain = MatingEnum.Agressive;
+
+        public MatingEnum ConsumesStrain => consumesStrain;
+        public MatingEnum GrantsStrain => grantsStrain;
 
         public CellSize CellSize => CellSize.Acid;
         public float DetectionRange => 0f;
@@ -73,7 +90,8 @@ namespace DefaultNamespace
             {
                 CellSize = CellSize,
                 MatingEnum = GetMatingEnum(),
-                Deviation = DeviationEnum.Default
+                Deviation = DeviationEnum.Default,
+                AcidConsumes = consumesStrain
             };
         }
         public void Destroy()

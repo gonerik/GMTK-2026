@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5699870445243897242}
   - component: {fileID: 5177703459011067701}
   m_Layer: 6
-  m_Name: Acid
+  m_Name: AgressiveAcid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

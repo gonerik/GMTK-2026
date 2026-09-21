@@ -14,7 +14,10 @@ namespace MateStrategy
         [Inject] private CellUnit.Factory cellFactory;
         [Inject] private RedCell.Factory redCellFactory;
         [Inject] private MatingProbabilities matingProbabilities;
-        [Inject] private Acid.Factory acidFactory;
+        [Inject] private Acid.AgressiveFactory agressiveAcidFactory;
+        // Optional: MatingInstaller skips this binding, with a warning, until the Horny Acid prefab is
+        // assigned on MatingInstaller.asset. SpawnAcid tolerates it being null.
+        [InjectOptional] private Acid.HornyFactory hornyAcidFactory;
 
         private int mutationChance;
         private static readonly int HornyAdditionalSpawnChance = 50;
@@ -46,41 +49,12 @@ namespace MateStrategy
                 return;
             }
 
-            if (mate1.GetView().CellSize == CellSize.Small && mate2.GetView().CellSize == CellSize.Acid && mate1.GetMatingEnum() != MatingEnum.Horny)
+            // Either collider can be the Acid, so try both orientations.
+            if (TryConsumeAcid(mate1, mate2) || TryConsumeAcid(mate2, mate1))
             {
-                mate1.IsMating = true;
-                mate2.IsMating = true;
-                MatingEnum resultingEnum = mate1.GetMatingEnum() + 1;
-                if (mate1.GetMatingEnum() == MatingEnum.Default && mate2.GetMatingEnum() == MatingEnum.Default)
-                {
-                    CreateAndInitializeCell(resultingEnum, mate1.CellSize, mate1.GetTargetPosition());
-                }
-                else
-                {
-                    HandleMutationAndCreation(resultingEnum, mate1.CellSize, mate1.GetTargetPosition(), mate1.GetView().Deviation, mate2.GetView().Deviation);
-                }
-                mate1.Destroy();
-                mate2.Destroy();
                 return;
             }
-            if(mate2.GetView().CellSize == CellSize.Small && mate1.GetView().CellSize == CellSize.Acid && mate2.GetMatingEnum() != MatingEnum.Horny)
-            {
-                mate1.IsMating = true;
-                mate2.IsMating = true;
-                MatingEnum resultingEnum = mate2.GetMatingEnum() + 1;
-                if (mate1.GetMatingEnum() == MatingEnum.Default && mate2.GetMatingEnum() == MatingEnum.Default)
-                {
-                    CreateAndInitializeCell(resultingEnum, mate2.CellSize, mate2.GetTargetPosition());
-                }
-                else
-                {
-                    HandleMutationAndCreation(resultingEnum, mate2.CellSize, mate2.GetTargetPosition(), mate1.GetView().Deviation, mate2.GetView().Deviation);
-                }
-                mate1.Destroy();
-                mate2.Destroy();
-                return;
-            }
-            
+
             if (mate1.GetView().CellSize != mate2.GetView().CellSize)
             {
                 return;
@@ -185,41 +159,84 @@ namespace MateStrategy
             FMODUnity.RuntimeManager.PlayOneShot(SecretionSoundID);
         }
 
-        // Extension seam for Acid variants. Every strain resolves to the one bound Acid prefab today;
-        // the planned split - one Acid promoting Default -> Agressive, a second promoting
-        // Agressive -> Horny - keys on exactly this strain, because the secreting cell's strain is the
-        // strain its Acid should promote. Adding a variant is a case here plus a MatingInstaller binding.
+        // A Small cell touching an Acid it can consume is promoted to the strain that Acid grants, at the
+        // same size, and both are consumed. Any other Small/Acid touch is a no-op for both.
+        private bool TryConsumeAcid(IMate cellMate, IMate acidMate)
+        {
+            if (!(acidMate is Acid acid) || cellMate.CellSize != CellSize.Small)
+            {
+                return false;
+            }
+
+            MatingEnum cellStrain = cellMate.GetMatingEnum();
+            if (cellStrain != acid.ConsumesStrain)
+            {
+                return false;
+            }
+
+            cellMate.IsMating = true;
+            acid.IsMating = true;
+
+            // Mirrors the mating rule below: promoting an Ordinary cell never rolls for a mutation,
+            // promoting anything further along does.
+            if (cellStrain == MatingEnum.Default)
+            {
+                CreateAndInitializeCell(acid.GrantsStrain, cellMate.CellSize, cellMate.GetTargetPosition());
+            }
+            else
+            {
+                HandleMutationAndCreation(acid.GrantsStrain, cellMate.CellSize, cellMate.GetTargetPosition(), cellMate.GetView().Deviation, acid.GetView().Deviation);
+            }
+
+            cellMate.Destroy();
+            acid.Destroy();
+            return true;
+        }
+
+        // Which Acid a pairing yields is set by the strain that paired. Horny is the terminal strain, so it
+        // has no Acid of its own; it yields one of each kind instead.
         private void SecreteAcid(MatingEnum strain, Vector3 at)
         {
-            int count;
+            IFactory<Acid>[] acids;
             switch (strain)
             {
                 case MatingEnum.Default:
-                    count = 1;
+                    acids = new IFactory<Acid>[] { agressiveAcidFactory };
                     break;
                 case MatingEnum.Agressive:
-                    count = 1;
+                    acids = new IFactory<Acid>[] { hornyAcidFactory };
                     break;
                 case MatingEnum.Horny:
-                    count = 2;
+                    acids = new IFactory<Acid>[] { agressiveAcidFactory, hornyAcidFactory };
                     break;
                 default:
                     return;
             }
 
-            if (count == 1)
+            if (acids.Length == 1)
             {
-                acidFactory.Create().transform.position = at;
+                SpawnAcid(acids[0], at);
                 return;
             }
 
             float randomOffset = UnityEngine.Random.Range(0f, 360f);
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < acids.Length; i++)
             {
-                float angle = randomOffset + i * (360f / count);
+                float angle = randomOffset + i * (360f / acids.Length);
                 Vector3 offset = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0);
-                acidFactory.Create().transform.position = at + offset;
+                SpawnAcid(acids[i], at + offset);
             }
+        }
+
+        // The Horny factory is null until its prefab is assigned; MatingInstaller already warns about it.
+        private static void SpawnAcid(IFactory<Acid> factory, Vector3 at)
+        {
+            if (factory == null)
+            {
+                return;
+            }
+
+            factory.Create().transform.position = at;
         }
 
         private void HandleMutationAndCreation(MatingEnum resultEnum, CellSize newSize, Vector3 spawnPos, DeviationEnum parent1Deviation, DeviationEnum parent2Deviation)
