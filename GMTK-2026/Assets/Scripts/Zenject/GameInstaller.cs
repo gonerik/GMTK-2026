@@ -14,6 +14,7 @@ public class GameInstaller : MonoInstaller
 {
     [SerializeField] private GlobalTimer globalTimerPrefab;
     [SerializeField] private Texture2D dragCursor;
+    [SerializeField] private FoodService.Settings foodSettings = new FoodService.Settings();
 
     public override void InstallBindings()
     {
@@ -33,6 +34,9 @@ public class GameInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<EnergyService>().AsSingle().NonLazy();
         Container.DeclareSignal<EnergyService.OnEnergyGoalReachedSignal>();
         Container.DeclareSignal<EnergyService.OnEnergyLostSignal>();
+        // Plain Bind, not BindInterfacesAndSelfTo: EnergyService already holds the IMeter binding.
+        Container.BindInstance(foodSettings);
+        Container.Bind<FoodService>().AsSingle();
         Container.DeclareSignal<GlobalTimer.OnLoseSignal>();
         Container.Bind<StrainDiscovery>().AsSingle();
         Container.DeclareSignal<StrainDiscovery.StrainDiscoveredSignal>();

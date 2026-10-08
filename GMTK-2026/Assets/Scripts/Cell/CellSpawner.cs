@@ -1,6 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
+using Energy;
 using MateStrategy;
 using UI.Reel;
 using UnityEngine;
@@ -40,11 +41,16 @@ namespace Cell
         [Tooltip("Strain seeded until the reel picks one. Keep it Default (Ordinary), the only strain Discovered from the start.")]
         [SerializeField] private MatingEnum defaultSeedStrain = MatingEnum.Default;
 
+        [Header("Food")]
+        [Tooltip("Food spent on each seeded cell. A spawn is skipped while the board holds less.")]
+        [SerializeField, Min(0)] private int foodPerCell = 2;
+
         [Header("Debug")]
         [SerializeField] private Color gizmoColor = Color.green;
 
         [Inject] private CellUnit.Factory cellFactory;
         [Inject] private SignalBus signalBus;
+        [Inject] private FoodService foodService;
 
         private int _aliveCount;
         private MatingEnum _seedStrain;
@@ -103,6 +109,8 @@ namespace Cell
         {
             if (maxAlive > 0 && _aliveCount >= maxAlive) return false;
             if (!TryFindSpawnPoint(out var point)) return false;
+            // Paid only once there is somewhere to put the cell, so a crowded tick costs nothing.
+            if (!foodService.TrySpend(foodPerCell)) return false;
 
             var cell = cellFactory.Create();
             
@@ -152,7 +160,7 @@ namespace Cell
 
             if (!Spawn())
             {
-                Debug.Log("CellSpawner: spawn skipped (cap reached or no clear point found).", this);
+                Debug.Log("CellSpawner: spawn skipped (cap reached, no clear point found, or not enough food).", this);
             }
         }
 

@@ -32,6 +32,9 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     private float ageRate;
     private float age;
     [Inject] private EnergyService energyService;
+    [Inject] private FoodService foodService;
+    // Set by the last dish this cell entered. Energy until then.
+    private DishPayout dishPayout;
 
     private bool isInitializedByFactory;
     private bool isWandering;
@@ -88,8 +91,21 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     {
         OnDie?.Invoke(this);
         UnsubscribeFromStrategies();
-        energyService.AddEnergy(payoutOverride ?? EnergyAmount, transform.position);
+        PayOut(payoutOverride ?? EnergyAmount);
         navigationSystem.UnregisterTarget(this);
+    }
+
+    // A loss (a Predator's kill penalty) always costs Energy; a gain goes where this cell's dish sends it.
+    private void PayOut(int payout)
+    {
+        if (payout < 0 || dishPayout == DishPayout.Energy)
+        {
+            energyService.AddEnergy(payout, transform.position);
+        }
+        else if (dishPayout == DishPayout.Food)
+        {
+            foodService.AddFood(payout, transform.position);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -293,6 +309,11 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     {
         this.ageRate = ageRate;
         Debug.Log("Age rate set to " + ageRate);
+    }
+
+    public void SetDishPayout(DishPayout payout)
+    {
+        dishPayout = payout;
     }
 
     public void SetVisionRange(float visionRange)

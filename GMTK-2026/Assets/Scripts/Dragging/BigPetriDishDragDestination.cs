@@ -1,4 +1,5 @@
 ﻿using System;
+using Energy;
 using Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,6 +9,8 @@ namespace Dragging
     public class BigPetriDishDragDestination : MonoBehaviour, IDragDestination
     {
         [SerializeField] private float ageRate;
+        [SerializeField, Tooltip("Where a positive Payout goes when a cell dies in this dish. A loss always costs Energy.")]
+        private DishPayout payout = DishPayout.Energy;
         public void ExecuteDrag(IDragable dragable)
         {
             Vector3 mousePos = Mouse.current.position.ReadValue();
@@ -21,6 +24,7 @@ namespace Dragging
             if(other.gameObject.TryGetComponent(out CellUnit cell))
             {
                 cell.SetAgeRate(ageRate);
+                cell.SetDishPayout(payout);
             }
         }
     }

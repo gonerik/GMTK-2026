@@ -6,8 +6,10 @@ using Zenject;
 
 namespace Energy
 {
-    public class EnergyService : IDisposable
+    public class EnergyService : IDisposable, IMeter
     {
+        private const int MaxEnergy = 100;
+
         public struct OnEnergyGoalReachedSignal
         {
         }
@@ -16,6 +18,15 @@ namespace Energy
         }
         
         public event Action<int> OnEnergyChanged;
+
+        public int Current => energyAmount;
+        public int Max => MaxEnergy;
+
+        event Action<int> IMeter.OnChanged
+        {
+            add => OnEnergyChanged += value;
+            remove => OnEnergyChanged -= value;
+        }
 
         // A payout that happened somewhere in the world (a cell dying), with the amount the cell paid rather
         // than what the clamp let through. Drives the floating numbers.
@@ -41,9 +52,9 @@ namespace Energy
 
         public void AddEnergy(int amount)
         {
-            energyAmount = (int)MathF.Min(energyAmount + amount, 100);
+            energyAmount = (int)MathF.Min(energyAmount + amount, MaxEnergy);
             OnEnergyChanged?.Invoke(energyAmount);
-            if (energyAmount >= 100)
+            if (energyAmount >= MaxEnergy)
             {
                 signalBus.Fire(new OnEnergyGoalReachedSignal());
             }
