@@ -38,6 +38,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     private SpriteRenderer spriteRenderer;
     [Inject] private CellLifetimeConfig lifetimeConfig;
     [Inject] private MatingService matingService;
+    [Inject] private MatingConfig matingConfig;
     private IMateStrategy matiStrategy;
 
     private string appearSound;
@@ -54,7 +55,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     private void Start()
     {
-        Initialize(matingEnum, cellSize, DeviationEnum.Default, transform.position);
+        //Initialize(matingEnum, cellSize, DeviationEnum.Default, transform.position);
         navigationSystem.RegisterTarget(this);
         LifeTimeTask().Forget();
         FMODUnity.RuntimeManager.PlayOneShot(appearSound);
@@ -87,7 +88,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     {
         OnDie?.Invoke(this);
         UnsubscribeFromStrategies();
-        energyService.AddEnergy(EnergyAmount);
+        energyService.AddEnergy(payoutOverride ?? EnergyAmount, transform.position);
         navigationSystem.UnregisterTarget(this);
     }
 
@@ -120,6 +121,37 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     public bool HasPaired { get; private set; }
 
     public void MarkPaired() => HasPaired = true;
+
+    // What this cell has devoured toward its next stage; only Agressive cells ever gain any. Like
+    // HasPaired it is kept out of InitializeStrategies, so re-expressing the genome cannot reset it.
+    public int Nourishment { get; private set; }
+
+    // How far this cell is through its stage, 0..1. Drives its scale.
+    public float GrowthProgress
+    {
+        get
+        {
+            int needed = matingConfig.GetNourishmentToGrow(cellSize);
+            return needed > 0 ? Nourishment / (float)needed : 0f;
+        }
+    }
+
+    public void Nourish(int nourishment)
+    {
+        Nourishment = nourishment;
+        visualAssembler.Regrow(this, GrowthProgress);
+    }
+
+    // Devouring's stage-up: the same cell a stage larger, carrying over any excess Nourishment. It keeps
+    // its dish age rate and deviation but starts the new stage's full lifespan.
+    public void GrowInPlace(CellSize newSize, int carriedNourishment)
+    {
+        cellSize = newSize;
+        Nourishment = carriedNourishment;
+        age = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
+        InitializeStrategies();
+        FMODUnity.RuntimeManager.PlayOneShot(appearSound);
+    }
 
     public virtual void Mate(IMate partner)
     {
@@ -168,6 +200,15 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     public void Destroy()
     {
         Destroy(gameObject);
+    }
+
+    // Set when a Predator kills this cell: it dies paying this instead of its own yield.
+    private int? payoutOverride;
+
+    public void DestroyWithPayout(int payout)
+    {
+        payoutOverride = payout;
+        Destroy();
     }
 
     public MatingEnum MatingEnum => matingEnum;
@@ -232,7 +273,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         cellMembrane.Initialize(this);
         matiStrategy.Initialize(this);
         sizeStrategy.Initialize(this);
-        spriteRenderer = visualAssembler.Reassemble(this);
+        spriteRenderer = visualAssembler.Reassemble(this, GrowthProgress);
 
         OnReinitialized?.Invoke(this);
     }

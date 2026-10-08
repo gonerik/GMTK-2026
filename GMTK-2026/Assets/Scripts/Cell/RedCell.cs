@@ -18,7 +18,9 @@ namespace DefaultNamespace
         [SerializeField] private MatingEnum matingEnum;
         [SerializeField] private int energyAmount;
         [SerializeField] private float moveSpeed;
-        
+        [SerializeField, Min(0), Tooltip("Energy lost each time this Predator kills a cell. Replaces the victim's own payout.")]
+        private int killPenalty = 5;
+
         public event Action<IVisualyConfigurable> OnReinitialized;
         public DeviationEnum Deviation => DeviationEnum.Red;
         
@@ -40,7 +42,6 @@ namespace DefaultNamespace
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
-            LifeTimeTask().Forget();
         }
         
         private async UniTaskVoid LifeTimeTask()
@@ -63,7 +64,7 @@ namespace DefaultNamespace
         public CellSize CellSize => cellSize;
         public void Destroy()
         {
-            energyService.AddEnergy(energyAmount);
+            energyService.AddEnergy(energyAmount, transform.position);
             navigationSystem.UnregisterTarget(this);
             Destroy(gameObject);
         }
@@ -86,11 +87,15 @@ namespace DefaultNamespace
 
         private void OnCollisionEnter2D(Collision2D other)
         {
+            // A Predator kills any cell it touches, whatever its stage or strain, and the kill costs
+            // killPenalty energy in place of the victim's own payout. Acid and other Predators are not
+            // CellUnits, so they are never touched. A cell already latched IsMating is being destroyed by
+            // its own contact this frame.
             if (other.gameObject.TryGetComponent(out CellUnit cell))
             {
-                if (cell.CellSize == CellSize && !cell.IsMating)
+                if (!cell.IsMating)
                 {
-                    cell.Destroy();
+                    cell.DestroyWithPayout(-killPenalty);
                 }
             }
         }
@@ -200,7 +205,8 @@ namespace DefaultNamespace
         private void SetupTargetingRules()
         {
             targetingRules.Clear();
-            targetingRules.Add(view => view.CellSize == CellSize && view.Deviation != DeviationEnum.Red);
+            // Hunts every cell of any stage or strain, except Acid and other Predators.
+            targetingRules.Add(view => view.CellSize != CellSize.Acid && view.Deviation != DeviationEnum.Red);
         }
 
         private void Start()
@@ -211,6 +217,7 @@ namespace DefaultNamespace
                 visualAssembler.Reassemble(this);
             }
             navigationSystem.RegisterTarget(this);
+            LifeTimeTask().Forget();
         }
         
         public class Factory : PlaceholderFactory<RedCell>

@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb842f4745044fe4a74d2fd36c0b61aa, type: 3}
   m_Name: CellLifetimeConfig
   m_EditorClassIdentifier: 
-  acidPrefab: {fileID: 0}
+  acidPrefab: {fileID: 2715200649326307395, guid: edf160506dd1d094380c8cea83b31f67, type: 3}
   MatingLifetimeAddition:
     _serializedList:
     - Key: 1
-      Value: 0
-    - Key: 2
-      Value: 10
-    - Key: 3
       Value: 25
+    - Key: 2
+      Value: 50
+    - Key: 3
+      Value: 100
   SizeLifetimeAddition:
     _serializedList:
     - Key: 1

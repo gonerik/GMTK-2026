@@ -4,7 +4,7 @@ using MateStrategy;
 using UnityEngine;
 using Zenject;
 
-namespace Cell.Selectable
+namespace UI.Selectable
 {
     [ CreateAssetMenu( fileName = "IconInstaller", menuName = "DefaultNamespace/IconInstaller", order = 0 )]
     public class IconInstaller : ScriptableObjectInstaller

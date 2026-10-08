@@ -2,6 +2,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
 using MateStrategy;
+using UI.Reel;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
@@ -35,16 +36,37 @@ namespace Cell
         [Tooltip("Max cells from this spawner alive at once. 0 = unlimited.")]
         [SerializeField, Min(0)] private int maxAlive = 0;
 
+        [Header("Seeding")]
+        [Tooltip("Strain seeded until the reel picks one. Keep it Default (Ordinary), the only strain Discovered from the start.")]
+        [SerializeField] private MatingEnum defaultSeedStrain = MatingEnum.Default;
+
         [Header("Debug")]
         [SerializeField] private Color gizmoColor = Color.green;
 
         [Inject] private CellUnit.Factory cellFactory;
+        [Inject] private SignalBus signalBus;
 
         private int _aliveCount;
+        private MatingEnum _seedStrain;
 
         private void Reset()
         {
             cellLayer = LayerMask.GetMask("Cell");
+        }
+
+        private void Awake()
+        {
+            _seedStrain = defaultSeedStrain;
+        }
+
+        private void OnEnable()
+        {
+            signalBus.Subscribe<ReelSelectorController.SeedStrainChangedSignal>(HandleSeedStrainChanged);
+        }
+
+        private void OnDisable()
+        {
+            signalBus.Unsubscribe<ReelSelectorController.SeedStrainChangedSignal>(HandleSeedStrainChanged);
         }
 
         private void Start()
@@ -83,7 +105,9 @@ namespace Cell
             if (!TryFindSpawnPoint(out var point)) return false;
 
             var cell = cellFactory.Create();
-            cell.Initialize(MatingEnum.Default, CellSize.Small, DeviationEnum.Default, new Vector3(point.x, point.y, 0f));
+            
+            //DeviationEnum deviation = UnityEngine.Random.Range(0, 100) < 7 ? DeviationEnum.Red : DeviationEnum.Default;
+            cell.Initialize(_seedStrain, CellSize.Small, DeviationEnum.Default, new Vector3(point.x, point.y, 0f));
             cell.OnDie += HandleSpawnedCellDied;
             _aliveCount++;
             return true;
@@ -110,6 +134,11 @@ namespace Cell
         {
             cell.OnDie -= HandleSpawnedCellDied;
             _aliveCount--;
+        }
+
+        private void HandleSeedStrainChanged(ReelSelectorController.SeedStrainChangedSignal signal)
+        {
+            _seedStrain = signal.Strain;
         }
 
         [ContextMenu("Spawn Cell")]

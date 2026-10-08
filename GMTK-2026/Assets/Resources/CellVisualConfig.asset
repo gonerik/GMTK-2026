@@ -72,3 +72,4 @@ MonoBehaviour:
       Value: {r: 1, g: 0.9843137, b: 0.46666667, a: 1}
     - Key: 3
       Value: {r: 0.50980395, g: 0.7058824, b: 0.84313726, a: 1}
+  burstSwell: 2

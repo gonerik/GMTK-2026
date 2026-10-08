@@ -1,10 +1,12 @@
 using Audio;
 using CoreLoop.Interfaces;
+using Cell;
 using Cell.Visual;
 using DefaultNamespace;
 using DefaultNamespace.Zenject;
 using Dragging;
 using Energy;
+using UI.Reel;
 using UnityEngine;
 using Zenject;
 
@@ -32,6 +34,9 @@ public class GameInstaller : MonoInstaller
         Container.DeclareSignal<EnergyService.OnEnergyGoalReachedSignal>();
         Container.DeclareSignal<EnergyService.OnEnergyLostSignal>();
         Container.DeclareSignal<GlobalTimer.OnLoseSignal>();
+        Container.Bind<StrainDiscovery>().AsSingle();
+        Container.DeclareSignal<StrainDiscovery.StrainDiscoveredSignal>();
+        Container.DeclareSignal<ReelSelectorController.SeedStrainChangedSignal>();
         Container.BindInterfacesAndSelfTo<NavigationSystem>().AsSingle().NonLazy();
         Container.Bind<GlobalTimer>()
             .FromComponentInNewPrefab(globalTimerPrefab)

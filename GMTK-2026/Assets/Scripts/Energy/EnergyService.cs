@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 using Zenject;
 
 namespace Energy
@@ -15,7 +16,11 @@ namespace Energy
         }
         
         public event Action<int> OnEnergyChanged;
-        
+
+        // A payout that happened somewhere in the world (a cell dying), with the amount the cell paid rather
+        // than what the clamp let through. Drives the floating numbers.
+        public event Action<int, Vector3> OnPayout;
+
         
         [Inject] private SignalBus signalBus;
         private int energyAmount;
@@ -43,7 +48,13 @@ namespace Energy
                 signalBus.Fire(new OnEnergyGoalReachedSignal());
             }
         }
-        
+
+        public void AddEnergy(int amount, Vector3 worldPosition)
+        {
+            AddEnergy(amount);
+            OnPayout?.Invoke(amount, worldPosition);
+        }
+
         private async UniTaskVoid LeakEnergy(CancellationToken cancellationToken)
         {
             while (cancellationToken.IsCancellationRequested == false)

@@ -12,6 +12,11 @@ namespace DefaultNamespace.Strategies
         public void Initialize(CellUnit cell)
         {
             cell.SetSpawnSound(smallSpawnSound);
+            // Agressive cells devour and never take Acid (ADR-0005), so they don't seek it.
+            if (cell.MatingEnum == MatingEnum.Agressive)
+            {
+                return;
+            }
             // Only seek Acid this cell can actually consume; otherwise it parks on the wrong kind.
             cell.AddTargetingRule(view => view.CellSize == CellSize.Acid && view.AcidConsumes == cell.MatingEnum);
         }
@@ -43,10 +48,10 @@ namespace DefaultNamespace.Strategies
             cell.SetSpawnSound(largeSpawnSound);
 
             // Ordinary cells never hunt: DefaultMatingStrategy zeroes their vision range, so they
-            // wander and let hunters come to them. Agressive and Horny cells look for a same-strain
-            // partner to pair with. The closure reads cell.HasPaired live, so a cell stops hunting
-            // the moment it secretes, with no re-initialisation.
-            if (cell.MatingEnum == MatingEnum.Agressive || cell.MatingEnum == MatingEnum.Horny)
+            // wander and let hunters come to them. Agressive cells never pair; they devour
+            // (AgressiveStrategy). Horny cells look for a same-strain partner to pair with. Pairing
+            // destroys both cells, so the HasPaired checks only matter within the frame it happens.
+            if (cell.MatingEnum == MatingEnum.Horny)
             {
                 cell.AddTargetingRule(view => !cell.HasPaired
                                               && view.CellSize == CellSize.Large

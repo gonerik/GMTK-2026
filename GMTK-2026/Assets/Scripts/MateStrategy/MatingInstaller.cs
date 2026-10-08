@@ -11,7 +11,7 @@ public class MatingInstaller : ScriptableObjectInstaller<MatingInstaller>
     [SerializeField] private GameObject redCellPrefab;
     [Tooltip("Agressive Acid: promotes Ordinary Small cells to Agressive.")]
     [SerializeField] private GameObject acidPrefab;
-    [Tooltip("Horny Acid: promotes Agressive Small cells to Horny.")]
+    [Tooltip("Horny Acid: left by Bursting and by Horny pairs. Grants the Horny strain; no strain takes it for now.")]
     [SerializeField] private GameObject hornyAcidPrefab;
 
     public override void InstallBindings()
@@ -30,7 +30,7 @@ public class MatingInstaller : ScriptableObjectInstaller<MatingInstaller>
         else
         {
             Debug.LogWarning("MatingInstaller: 'Horny Acid Prefab' is unassigned on MatingInstaller.asset. " +
-                             "Horny Acid will never spawn, so Agressive cells cannot be promoted to Horny.", this);
+                             "Horny Acid will never spawn, from Bursting or from Horny pairs.", this);
         }
 
         Container.BindInterfacesAndSelfTo<MatingService>().AsSingle().WithArguments(matingConfig,cellPrefab).NonLazy();

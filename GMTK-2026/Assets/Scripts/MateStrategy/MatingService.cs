@@ -1,4 +1,5 @@
 ﻿using System;
+using Cell;
 using Cysharp.Threading.Tasks;
 using DefaultNamespace;
 using Interfaces;
@@ -16,11 +17,11 @@ namespace MateStrategy
         [Inject] private MatingProbabilities matingProbabilities;
         [Inject] private Acid.AgressiveFactory agressiveAcidFactory;
         // Optional: MatingInstaller skips this binding, with a warning, until the Horny Acid prefab is
-        // assigned on MatingInstaller.asset. SpawnAcid tolerates it being null.
+        // assigned on MatingInstaller.asset. SpawnAcid tolerates it being null, so Bursting still works.
         [InjectOptional] private Acid.HornyFactory hornyAcidFactory;
+        [Inject] private StrainDiscovery strainDiscovery;
 
-        private int mutationChance;
-        private static readonly int HornyAdditionalSpawnChance = 50;
+        private int mutationChance = 0;
         private const string MutateSoundID = "event:/Cell mutates";
         // Deliberate reuse: GoopCore.fspro has no acid event yet. A separate constant so a dedicated
         // event can be swapped in here without disturbing deviation-mutation audio.
@@ -38,7 +39,7 @@ namespace MateStrategy
             while (true)
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(matingConfig.MutationChanceGrowthRate));
-                mutationChance++;
+                //mutationChance++;
             }
         }
 
@@ -55,13 +56,30 @@ namespace MateStrategy
                 return;
             }
 
+            // Either cell can be the devourer, so try both orientations.
+            if (TryDevour(mate1, mate2) || TryDevour(mate2, mate1))
+            {
+                return;
+            }
+
             if (mate1.GetView().CellSize != mate2.GetView().CellSize)
             {
                 return;
             }
 
-            // Mating and pairing both happen only within a strain; a cross-strain touch does nothing.
-            if (mate1.GetMatingEnum() != mate2.GetMatingEnum())
+            // Mating and pairing happen within a strain, except that a Horny cell also mates with an
+            // Ordinary one (ADR-0006). Any other cross-strain touch does nothing.
+            MatingEnum strain1 = mate1.GetMatingEnum();
+            MatingEnum strain2 = mate2.GetMatingEnum();
+            bool hornyMix = (strain1 == MatingEnum.Horny && HornyStrategy.AcceptsPartner(strain2))
+                            || (strain2 == MatingEnum.Horny && HornyStrategy.AcceptsPartner(strain1));
+            if (strain1 != strain2 && !hornyMix)
+            {
+                return;
+            }
+
+            // Agressive cells neither mate nor pair; they grow by Devouring instead (ADR-0005).
+            if (mate1.GetMatingEnum() == MatingEnum.Agressive)
             {
                 return;
             }
@@ -71,57 +89,61 @@ namespace MateStrategy
                 return;
             }
 
+            // A mixed Large pair is rejected inside pairing by its same-strain check; what a Large
+            // Horny and a Large Ordinary do together is still to be designed.
             if (mate1.CellSize == CellSize.Large || mate2.CellSize == CellSize.Large)
             {
                 TrySecreteFromPairing(mate1, mate2);
                 return;
             }
-            
+
             mate1.IsMating = true;
             mate2.IsMating = true;
-            
-            
-            // Offspring always inherit the parents' shared strain; only Acid changes a strain.
-            MatingEnum strain = mate1.GetMatingEnum();
-            CellSize newSize = mate1.CellSize + 1;
+
+            CellSize stage = mate1.CellSize;
+            CellSize newSize = stage + 1;
             Vector3 spawnPos = (mate1.GetTargetPosition() + mate2.GetTargetPosition()) / 2f;
+            DeviationEnum deviation1 = mate1.GetView().Deviation;
+            DeviationEnum deviation2 = mate2.GetView().Deviation;
 
-            // One bonus roll per Horny parent - and a Horny cell only ever mates with another Horny.
-            if (mate1.GetMatingEnum() == MatingEnum.Horny)
+            if (strain1 == MatingEnum.Default && strain2 == MatingEnum.Default)
             {
-                int additionalSpawnProbability = UnityEngine.Random.Range(0, 100);
-                if (additionalSpawnProbability <= HornyAdditionalSpawnChance)
-                {
-                    Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
-                    HandleMutationAndCreation(strain, mate1.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
-                }
-            }
-            if(mate2.GetMatingEnum() == MatingEnum.Horny)
-            {
-                int additionalSpawnProbability = UnityEngine.Random.Range(0, 100);
-                if (additionalSpawnProbability <= HornyAdditionalSpawnChance)
-                {
-                    Vector3 spawnOffset = UnityEngine.Random.insideUnitCircle * 1f;
-                    HandleMutationAndCreation(strain, mate2.CellSize, spawnPos + spawnOffset, mate1.GetView().Deviation, mate2.GetView().Deviation);
-                }
-            }
-
-            if (strain == MatingEnum.Default)
-            {
-                CreateAndInitializeCell(strain, newSize, spawnPos);
+                // The Ordinary line never mutates through its own matings.
+                CreateAndInitializeCell(MatingEnum.Default, newSize, spawnPos);
             }
             else
             {
-                HandleMutationAndCreation(strain, newSize, spawnPos, mate1.GetView().Deviation, mate2.GetView().Deviation);
+                // A Horny parent is involved. The offspring is always Horny, so mating never shifts a strain
+                // (only Acid does), and the mating yields a Brood of copies at the parents' stage.
+                // In a mixed pair the partner is the Ordinary parent; for Horny + Horny either will do.
+                MatingEnum partnerStrain = strain1 == MatingEnum.Horny ? strain2 : strain1;
+                HandleMutationAndCreation(MatingEnum.Horny, newSize, spawnPos, deviation1, deviation2);
+                SpawnBrood(partnerStrain, stage, spawnPos, deviation1, deviation2);
             }
             mate1.Destroy();
             mate2.Destroy();
         }
 
-        // Two Large cells of the same strain that touch secrete Acid, once per cell. This replaces
-        // the old "Large cell dies -> drops Acid" hook that used to live in LargeSize.HandleOnDie.
-        // Neither cell is destroyed, and IsMating is deliberately left alone: RedCell.OnCollisionEnter2D
-        // skips cells whose IsMating is set, so latching it here would make paired cells predator-proof.
+        // The extra cells a Horny mating yields besides its offspring: one copy of the partner, sometimes a
+        // second, and sometimes a copy of the Horny parent. Rolled once per mating, never per parent. Every
+        // copy, an Ordinary one included, rolls for a mutation.
+        private void SpawnBrood(MatingEnum partnerStrain, CellSize stage, Vector3 at, DeviationEnum deviation1, DeviationEnum deviation2)
+        {
+            int partnerCopies = UnityEngine.Random.Range(0, 100) < matingConfig.SecondPartnerCopyChance ? 2 : 1;
+            for (int i = 0; i < partnerCopies; i++)
+            {
+                HandleMutationAndCreation(partnerStrain, stage, at + (Vector3)(UnityEngine.Random.insideUnitCircle * 1f), deviation1, deviation2);
+            }
+
+            if (UnityEngine.Random.Range(0, 100) < matingConfig.SelfCopyChance)
+            {
+                HandleMutationAndCreation(MatingEnum.Horny, stage, at + (Vector3)(UnityEngine.Random.insideUnitCircle * 1f), deviation1, deviation2);
+            }
+        }
+
+        // Two Large cells of the same strain that touch secrete Acid. This replaces the old "Large cell
+        // dies -> drops Acid" hook that used to live in LargeSize.HandleOnDie. Acid should cost cells, so
+        // both are destroyed (ADR-0001, amended). Agressive cells never get here: they don't pair.
         private void TrySecreteFromPairing(IMate mate1, IMate mate2)
         {
             if (!(mate1 is CellUnit cell1) || !(mate2 is CellUnit cell2))
@@ -144,9 +166,9 @@ namespace MateStrategy
                 return;
             }
 
-            // The only touch that yields nothing is one between two cells that have both already
-            // paired. Latching both flags here is also what stops Unity's second OnCollisionEnter2D
-            // callback - the one raised on the other collider - from secreting a second time.
+            // Destroy only takes effect at the end of the frame, so Unity's second OnCollisionEnter2D
+            // callback - the one raised on the other collider - still arrives. Latching both flags here
+            // is what stops it secreting a second time.
             if (cell1.HasPaired && cell2.HasPaired)
             {
                 return;
@@ -157,6 +179,8 @@ namespace MateStrategy
 
             Vector3 spawnPos = (cell1.GetTargetPosition() + cell2.GetTargetPosition()) / 2f;
             SecreteAcid(cell1.MatingEnum, spawnPos);
+            mate1.Destroy();
+            mate2.Destroy();
             FMODUnity.RuntimeManager.PlayOneShot(SecretionSoundID);
         }
 
@@ -170,32 +194,74 @@ namespace MateStrategy
             }
 
             MatingEnum cellStrain = cellMate.GetMatingEnum();
-            if (cellStrain != acid.ConsumesStrain)
+            // Agressive cells devour and never take Acid (ADR-0005). That leaves Horny Acid, whose recipe
+            // still names Agressive, with no consumer until the recipe is revisited.
+            if (cellStrain != acid.ConsumesStrain || cellStrain == MatingEnum.Agressive)
             {
                 return false;
             }
 
             cellMate.IsMating = true;
             acid.IsMating = true;
-
-            // Mirrors the mating rule below: promoting an Ordinary cell never rolls for a mutation,
-            // promoting anything further along does.
-            if (cellStrain == MatingEnum.Default)
-            {
-                CreateAndInitializeCell(acid.GrantsStrain, cellMate.CellSize, cellMate.GetTargetPosition());
-            }
-            else
-            {
-                HandleMutationAndCreation(acid.GrantsStrain, cellMate.CellSize, cellMate.GetTargetPosition(), cellMate.GetView().Deviation, acid.GetView().Deviation);
-            }
+            
+            HandleMutationAndCreation(acid.GrantsStrain, cellMate.CellSize, cellMate.GetTargetPosition(), cellMate.GetView().Deviation, acid.GetView().Deviation);
+            // Discovers the strain even when the mutation roll above produced a Predator (ADR-0004).
+            strainDiscovery.Discover(acid.GrantsStrain);
 
             cellMate.Destroy();
             acid.Destroy();
             return true;
         }
 
-        // Which Acid a pairing yields is set by the strain that paired. Horny is the terminal strain, so it
-        // has no Acid of its own; it yields one of each kind instead.
+        // An Agressive cell touching a cell it can devour destroys it, and the prey pays out its energy
+        // as any death does. Its Nourishment goes to the devourer; enough of it grows the devourer a stage
+        // in place, carrying over the excess, and a Large devourer Bursts instead.
+        private bool TryDevour(IMate devourerMate, IMate preyMate)
+        {
+            if (!(devourerMate is CellUnit devourer) || !(preyMate is CellUnit prey))
+            {
+                return false;
+            }
+
+            if (devourer.IsMating || prey.IsMating || !AgressiveStrategy.CanDevour(devourer, prey.GetView()))
+            {
+                return false;
+            }
+
+            // Latched so Unity's second OnCollisionEnter2D callback for this contact is ignored.
+            prey.IsMating = true;
+            int nourishment = devourer.Nourishment + matingConfig.GetNourishment(prey.CellSize);
+            prey.Destroy();
+
+            int needed = matingConfig.GetNourishmentToGrow(devourer.CellSize);
+            if (nourishment < needed)
+            {
+                devourer.Nourish(nourishment);
+            }
+            else if (devourer.CellSize == CellSize.Large)
+            {
+                Burst(devourer);
+            }
+            else
+            {
+                // Growth never rolls for a mutation.
+                devourer.GrowInPlace(devourer.CellSize + 1, nourishment - needed);
+            }
+            return true;
+        }
+
+        // A fully nourished Large Agressive cell dies and leaves one Horny Acid where it stood. It pays out
+        // its energy like any death. Not a Promotion, so it Discovers nothing.
+        private void Burst(CellUnit cell)
+        {
+            cell.IsMating = true;
+            SpawnAcid(hornyAcidFactory, cell.GetTargetPosition());
+            FMODUnity.RuntimeManager.PlayOneShot(SecretionSoundID);
+            cell.Destroy();
+        }
+
+        // Which Acid a pairing yields is set by the strain that paired. Agressive cells never pair; Horny
+        // is the terminal strain, so it has no Acid of its own and yields one of each kind instead.
         private void SecreteAcid(MatingEnum strain, Vector3 at)
         {
             IFactory<Acid>[] acids;
@@ -203,9 +269,6 @@ namespace MateStrategy
             {
                 case MatingEnum.Default:
                     acids = new IFactory<Acid>[] { agressiveAcidFactory };
-                    break;
-                case MatingEnum.Agressive:
-                    acids = new IFactory<Acid>[] { hornyAcidFactory };
                     break;
                 case MatingEnum.Horny:
                     acids = new IFactory<Acid>[] { agressiveAcidFactory, hornyAcidFactory };
@@ -249,17 +312,18 @@ namespace MateStrategy
             // Inheritance logic
             int inheritanceBonus = 30; // 30% bonus for having a parent with deviation
             
-            if (parent1Deviation == DeviationEnum.Red) redProb += inheritanceBonus;
-            if (parent2Deviation == DeviationEnum.Red) redProb += inheritanceBonus;
-            
-            if (parent1Deviation == DeviationEnum.Yellow) yellowProb += inheritanceBonus;
-            if (parent2Deviation == DeviationEnum.Yellow) yellowProb += inheritanceBonus;
-            
-            if (parent1Deviation == DeviationEnum.Blue) blueProb += inheritanceBonus;
-            if (parent2Deviation == DeviationEnum.Blue) blueProb += inheritanceBonus;
+            // if (parent1Deviation == DeviationEnum.Red) redProb += inheritanceBonus;
+            // if (parent2Deviation == DeviationEnum.Red) redProb += inheritanceBonus;
+            //
+            // if (parent1Deviation == DeviationEnum.Yellow) yellowProb += inheritanceBonus;
+            // if (parent2Deviation == DeviationEnum.Yellow) yellowProb += inheritanceBonus;
+            //
+            // if (parent1Deviation == DeviationEnum.Blue) blueProb += inheritanceBonus;
+            // if (parent2Deviation == DeviationEnum.Blue) blueProb += inheritanceBonus;
             
             int totalMutationChance = redProb + yellowProb + blueProb + mutationChance;
             int mutationProbability = UnityEngine.Random.Range(0, 100);
+            Debug.Log(totalMutationChance + "           " + mutationProbability);
 
             if (mutationProbability < totalMutationChance)
             {
