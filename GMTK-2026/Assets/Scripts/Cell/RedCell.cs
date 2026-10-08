@@ -35,22 +35,34 @@ namespace DefaultNamespace
         private Vector2 currentWanderDirection;
         private float age;
         private float ageRate = 1;
-        
+        private SpriteRenderer spriteRenderer;
+
         private const string DieSound = "event:/Cell dies";
-        
+        private const float LifeTick = 1f;
 
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
         }
         
+        // Share of its lifespan this Predator has left, 1..0. Drives its opacity.
+        private float RemainingLife
+        {
+            get
+            {
+                int lifetime = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
+                return lifetime > 0 ? age / lifetime : 0f;
+            }
+        }
+
         private async UniTaskVoid LifeTimeTask()
         {
             age = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
             while (age >= 0)
             {
                 age -= ageRate;
-                await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: this.GetCancellationTokenOnDestroy());
+                visualAssembler.ShowRemainingLife(spriteRenderer, RemainingLife, LifeTick);
+                await UniTask.Delay(TimeSpan.FromSeconds(LifeTick), cancellationToken: this.GetCancellationTokenOnDestroy());
             }
             FMODUnity.RuntimeManager.PlayOneShot(DieSound);
             Destroy();
@@ -197,8 +209,8 @@ namespace DefaultNamespace
             isInitializedByFactory = true;
             
             SetupTargetingRules();
-            
-            visualAssembler.Reassemble(this);
+
+            spriteRenderer = visualAssembler.Reassemble(this);
             OnReinitialized?.Invoke(this);
         }
 
@@ -214,7 +226,7 @@ namespace DefaultNamespace
             if (!isInitializedByFactory)
             {
                 SetupTargetingRules();
-                visualAssembler.Reassemble(this);
+                spriteRenderer = visualAssembler.Reassemble(this);
             }
             navigationSystem.RegisterTarget(this);
             LifeTimeTask().Forget();

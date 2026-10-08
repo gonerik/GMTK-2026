@@ -13,6 +13,10 @@ namespace DefaultNamespace
         [SerializeField] private SerializedDictionary<DeviationEnum, Color> deviationColors;
         [Tooltip("How far a fully nourished Large Agressive cell swells, relative to its stage scale, just before it Bursts.")]
         [SerializeField] private float burstSwell = 1.5f;
+        [Tooltip("Sprite opacity of a cell with its whole lifespan ahead of it.")]
+        [SerializeField, Range(0f, 1f)] private float maxLifeOpacity = 1f;
+        [Tooltip("Sprite opacity of a cell about to die of age.")]
+        [SerializeField, Range(0f, 1f)] private float minLifeOpacity = 0.25f;
 
         public override void InstallBindings()
         {
@@ -43,6 +47,9 @@ namespace DefaultNamespace
             }
             return Mathf.Lerp(from, to, growth);
         }
+
+        // A cell fades from maxLifeOpacity toward minLifeOpacity as its remaining life (1..0) runs out.
+        public float GetLifeOpacity(float remainingLife) => Mathf.Lerp(minLifeOpacity, maxLifeOpacity, remainingLife);
         public SpriteRenderer GetCellSprite(MatingEnum matingEnum, CellSize cellSize) => matingModifiers[matingEnum][cellSize];
         public Color GetDeviationColor(DeviationEnum deviationEnum) => deviationColors[deviationEnum];
     }

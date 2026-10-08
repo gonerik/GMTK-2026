@@ -21,11 +21,27 @@ namespace Cell.Visual
             }
             
             SpriteRenderer spritePrefab = config.GetCellSprite(cell.MatingEnum, cell.CellSize);
-            Object.Destroy(cell.GetTransform().GetComponentInChildren<SpriteRenderer>());
+            SpriteRenderer oldSprite = cell.GetTransform().GetComponentInChildren<SpriteRenderer>();
+            if (oldSprite != null)
+            {
+                oldSprite.DOKill();
+                Object.Destroy(oldSprite);
+            }
             SpriteRenderer sprite = UnityEngine.Object.Instantiate(spritePrefab, cell.GetTransform());
-            sprite.color = config.GetDeviationColor(cell.Deviation);
+            // A cell is only ever assembled with its whole lifespan ahead of it.
+            Color color = config.GetDeviationColor(cell.Deviation);
+            color.a = config.GetLifeOpacity(1f);
+            sprite.color = color;
             cell.GetTransform().DOScale(config.GetCellScale(cell.CellSize, growth), 0.2f);
             return sprite;
+        }
+
+        // Fades a cell's sprite toward the opacity of its remaining life (1 = whole lifespan ahead, 0 = dying).
+        public void ShowRemainingLife(SpriteRenderer sprite, float remainingLife, float duration)
+        {
+            if (sprite == null) return;
+            sprite.DOKill();
+            sprite.DOFade(config.GetLifeOpacity(remainingLife), duration).SetEase(Ease.Linear);
         }
 
         // Resizes a cell to show its growth within its stage, without rebuilding its sprite.

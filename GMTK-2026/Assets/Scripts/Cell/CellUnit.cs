@@ -43,8 +43,8 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     private string appearSound;
     private const string DieSound = "event:/Cell dies";
-    
-    
+    private const float LifeTick = 1f;
+
 
     [Inject] private NavigationSystem navigationSystem;
 
@@ -225,13 +225,24 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
 
     public event Action<CellUnit> OnDie;
 
+    // Share of its lifespan this cell has left, 1..0. Drives its opacity.
+    private float RemainingLife
+    {
+        get
+        {
+            int lifetime = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
+            return lifetime > 0 ? age / lifetime : 0f;
+        }
+    }
+
     private async UniTaskVoid LifeTimeTask()
     {
         age = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
         while (age >= 0)
         {
             age -= ageRate;
-            await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: this.GetCancellationTokenOnDestroy());
+            visualAssembler.ShowRemainingLife(spriteRenderer, RemainingLife, LifeTick);
+            await UniTask.Delay(TimeSpan.FromSeconds(LifeTick), cancellationToken: this.GetCancellationTokenOnDestroy());
         }
         FMODUnity.RuntimeManager.PlayOneShot(DieSound);
         Destroy();
