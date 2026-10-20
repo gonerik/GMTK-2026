@@ -13,10 +13,14 @@ public class MatingConfig : ScriptableObject
     [Tooltip("How many meals of its own stage an Agressive cell needs to grow a stage, or to Burst when Large.")]
     [SerializeField] private int mealsToGrow = 3;
     [Header("Horny Brood")]
-    [Tooltip("Chance (%) that a Horny mating's Brood holds a second copy of the partner. The first copy is guaranteed.")]
+    [Tooltip("Starting chance (%) that a Horny mating's Brood holds a second copy of the partner. The first copy is guaranteed. The chance returns here whenever the second copy appears.")]
     [SerializeField, Range(0, 100)] private int secondPartnerCopyChance = 50;
-    [Tooltip("Chance (%) that a Horny mating's Brood holds a copy of the Horny parent.")]
+    [Tooltip("Percentage points the second-copy chance gains each Horny mating that misses it, up to 100.")]
+    [SerializeField, Range(0, 100)] private int secondPartnerCopyChanceGrowth = 10;
+    [Tooltip("Starting chance (%) that a Horny mating's Brood holds a copy of the Horny parent. The chance returns here whenever the copy appears.")]
     [SerializeField, Range(0, 100)] private int selfCopyChance = 50;
+    [Tooltip("Percentage points the self-copy chance gains each Horny mating that misses it, up to 100.")]
+    [SerializeField, Range(0, 100)] private int selfCopyChanceGrowth = 10;
     [Header("Predators")]
     [Tooltip("Clear edge-to-edge gap between a Predator and the new cells it arrives beside.")]
     [SerializeField, Min(0f)] private float predatorArrivalGap = 1f;
@@ -25,7 +29,9 @@ public class MatingConfig : ScriptableObject
     public float MatingDuration => matingDuration;
     public float MutationChanceGrowthRate => mutationChanceGrowthRate;
     public int SecondPartnerCopyChance => secondPartnerCopyChance;
+    public int SecondPartnerCopyChanceGrowth => secondPartnerCopyChanceGrowth;
     public int SelfCopyChance => selfCopyChance;
+    public int SelfCopyChanceGrowth => selfCopyChanceGrowth;
     public float PredatorArrivalGap => predatorArrivalGap;
     public int PredatorArrivalAttempts => predatorArrivalAttempts;
 

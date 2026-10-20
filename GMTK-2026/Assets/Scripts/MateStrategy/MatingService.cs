@@ -23,6 +23,10 @@ namespace MateStrategy
         [Inject] private CellVisualConfig cellVisualConfig;
 
         private int mutationChance = 0;
+        // Brood copies that keep failing to appear grow likelier (see RollGrowingChance). One count per roll,
+        // shared by every Horny mating for the whole run.
+        private int secondPartnerCopyMisses;
+        private int selfCopyMisses;
         // Brood copies land anywhere within this distance of the mating point.
         private const float BroodScatter = 1f;
         private const string WallLayer = "PetriDish";
@@ -131,20 +135,36 @@ namespace MateStrategy
         }
 
         // The extra cells a Horny mating yields besides its offspring: one copy of the partner, sometimes a
-        // second, and sometimes a copy of the Horny parent. Rolled once per mating, never per parent. Every
+        // second, and sometimes a copy of the Horny parent. Rolled once per mating, never per parent. Each
+        // "sometimes" grows likelier with every mating that misses it and resets once it happens. Every
         // copy, an Ordinary one included, rolls for a mutation, but none is ever a Predator.
         private void SpawnBrood(MatingEnum partnerStrain, CellSize stage, Vector3 at, DeviationEnum deviation1, DeviationEnum deviation2)
         {
-            int partnerCopies = UnityEngine.Random.Range(0, 100) < matingConfig.SecondPartnerCopyChance ? 2 : 1;
+            int partnerCopies = RollGrowingChance(matingConfig.SecondPartnerCopyChance, matingConfig.SecondPartnerCopyChanceGrowth, ref secondPartnerCopyMisses) ? 2 : 1;
             for (int i = 0; i < partnerCopies; i++)
             {
                 HandleMutationAndCreation(partnerStrain, stage, at + (Vector3)(UnityEngine.Random.insideUnitCircle * BroodScatter), deviation1, deviation2);
             }
 
-            if (UnityEngine.Random.Range(0, 100) < matingConfig.SelfCopyChance)
+            if (RollGrowingChance(matingConfig.SelfCopyChance, matingConfig.SelfCopyChanceGrowth, ref selfCopyMisses))
             {
                 HandleMutationAndCreation(MatingEnum.Horny, stage, at + (Vector3)(UnityEngine.Random.insideUnitCircle * BroodScatter), deviation1, deviation2);
             }
+        }
+
+        // A chance that gains `growth` percentage points for every miss in a row, up to 100, and falls back to
+        // `startChance` on a hit. Counting misses rather than storing the chance keeps Inspector tuning live.
+        private static bool RollGrowingChance(int startChance, int growth, ref int misses)
+        {
+            int chance = Mathf.Min(100, startChance + misses * growth);
+            if (UnityEngine.Random.Range(0, 100) < chance)
+            {
+                misses = 0;
+                return true;
+            }
+
+            misses++;
+            return false;
         }
 
         // Predators arrive beside new cells, never in their place (ADR-0008): at most one per mating or

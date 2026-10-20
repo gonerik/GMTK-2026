@@ -16,7 +16,9 @@ MonoBehaviour:
   mutationChanceGrowthRate: 0
   stageNourishmentRatio: 3
   mealsToGrow: 3
-  secondPartnerCopyChance: 20
-  selfCopyChance: 7
+  secondPartnerCopyChance: 15
+  secondPartnerCopyChanceGrowth: 10
+  selfCopyChance: 5
+  selfCopyChanceGrowth: 10
   predatorArrivalGap: 1
   predatorArrivalAttempts: 8

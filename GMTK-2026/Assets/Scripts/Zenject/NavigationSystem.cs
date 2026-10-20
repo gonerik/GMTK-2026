@@ -18,8 +18,18 @@ namespace DefaultNamespace.Zenject
         private List<ITarget> _targets = new List<ITarget>();
         private CancellationTokenSource _cts;
 
+        // Dish rims live on this layer. Vision reaches further than the gap between dishes, so without a
+        // line-of-sight check a cell would chase prey in another dish and push into its own rim forever.
+        private const string WallLayer = "PetriDish";
+        private readonly RaycastHit2D[] _wallHits = new RaycastHit2D[1];
+        private ContactFilter2D _walls;
+
         public void Initialize()
         {
+            // Triggers are skipped: each dish's trigger circle sits on the same layer as its rim.
+            _walls = new ContactFilter2D { useTriggers = false };
+            _walls.SetLayerMask(LayerMask.GetMask(WallLayer));
+
             _cts = new CancellationTokenSource();
             UpdateLoop(_cts.Token).Forget();
         }
@@ -103,7 +113,7 @@ namespace DefaultNamespace.Zenject
                         continue;
                     }
                     
-                    canTargetMatrix[i * targetCount + j] = t1.CanTarget(t2);
+                    canTargetMatrix[i * targetCount + j] = t1.CanTarget(t2) && CanReach(targetPositions[i], targetPositions[j], detectionRanges[i]);
                 }
             }
 
@@ -144,6 +154,18 @@ namespace DefaultNamespace.Zenject
             detectionRanges.Dispose();
             canTargetMatrix.Dispose();
             targetIndices.Dispose();
+        }
+
+        // A cell only chases what it can reach: in range, with no dish wall in between. The job rejects
+        // out-of-range pairs too; checking range here first keeps the linecast to the pairs that need it.
+        private bool CanReach(Vector2 from, Vector2 to, float range)
+        {
+            if ((to - from).sqrMagnitude > range * range)
+            {
+                return false;
+            }
+
+            return Physics2D.Linecast(from, to, _walls, _wallHits) == 0;
         }
 
         [BurstCompile]
