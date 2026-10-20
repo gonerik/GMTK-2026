@@ -33,6 +33,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     private float age;
     [Inject] private EnergyService energyService;
     [Inject] private FoodService foodService;
+    [Inject] private FoodConfig foodConfig;
     // Set by the last dish this cell entered. Energy until then.
     private DishPayout dishPayout;
 
@@ -47,6 +48,8 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     private string appearSound;
     private const string DieSound = "event:/Cell dies";
     private const float LifeTick = 1f;
+    // Remaining life at or below which a Bite kills, so float error never spares a fresh cell its Nth Bite.
+    private const float BiteKillTolerance = 0.01f;
 
 
     [Inject] private NavigationSystem navigationSystem;
@@ -91,20 +94,23 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     {
         OnDie?.Invoke(this);
         UnsubscribeFromStrategies();
-        PayOut(payoutOverride ?? EnergyAmount);
+        PayOut();
         navigationSystem.UnregisterTarget(this);
     }
 
-    // A loss (a Predator's kill penalty) always costs Energy; a gain goes where this cell's dish sends it.
-    private void PayOut(int payout)
+    // The dish decides which Payout is paid: the Energy Payout in the Energy dish, the Food Payout in the
+    // Food dish, nothing in the Fast dish. A loss always costs Energy, whatever the dish.
+    private void PayOut()
     {
-        if (payout < 0 || dishPayout == DishPayout.Energy)
+        int energy = EnergyAmount;
+        if (energy < 0 || dishPayout == DishPayout.Energy)
         {
-            energyService.AddEnergy(payout, transform.position);
+            energyService.AddEnergy(energy, transform.position);
         }
-        else if (dishPayout == DishPayout.Food)
+
+        if (dishPayout == DishPayout.Food)
         {
-            foodService.AddFood(payout, transform.position);
+            foodService.AddFood(FoodAmount, transform.position);
         }
     }
 
@@ -128,6 +134,7 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     public float DetectionRange => detectionRange;
     public CellSize CellSize => cellSize;
     public int EnergyAmount => lifetimeConfig.CalculateEnergyGain(matingEnum, cellSize, Deviation);
+    public int FoodAmount => foodConfig.CalculateFoodPayout(matingEnum, cellSize, Deviation);
 
     public bool IsMating { get; set; }
 
@@ -167,6 +174,23 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         age = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation);
         InitializeStrategies();
         FMODUnity.RuntimeManager.PlayOneShot(appearSound);
+    }
+
+    // A Predator's Bite: takes a share of this cell's full lifespan. Returns true if it was the killing Bite,
+    // which latches IsMating ("destruction pending") so no other Bite this frame can count as a second kill.
+    public bool TakeBite(float shareOfLifespan)
+    {
+        age -= lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation) * shareOfLifespan;
+        if (age <= BiteKillTolerance)
+        {
+            IsMating = true;
+            FMODUnity.RuntimeManager.PlayOneShot(DieSound);
+            Destroy();
+            return true;
+        }
+
+        visualAssembler.ShowBite(spriteRenderer, Deviation, RemainingLife);
+        return false;
     }
 
     public virtual void Mate(IMate partner)
@@ -216,15 +240,6 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
     public void Destroy()
     {
         Destroy(gameObject);
-    }
-
-    // Set when a Predator kills this cell: it dies paying this instead of its own yield.
-    private int? payoutOverride;
-
-    public void DestroyWithPayout(int payout)
-    {
-        payoutOverride = payout;
-        Destroy();
     }
 
     public MatingEnum MatingEnum => matingEnum;
@@ -364,6 +379,8 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
             Deviation = Deviation,
             MatingEnum = matingEnum,
             EnergyAmount = EnergyAmount,
+            FoodAmount = FoodAmount,
+            Payout = dishPayout,
             speed = moveSpeed,
             Age = age,
             MaxAge = lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation),

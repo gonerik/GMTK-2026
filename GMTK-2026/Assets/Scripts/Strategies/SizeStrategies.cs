@@ -49,13 +49,14 @@ namespace DefaultNamespace.Strategies
 
             // Ordinary cells never hunt: DefaultMatingStrategy zeroes their vision range, so they
             // wander and let hunters come to them. Agressive cells never pair; they devour
-            // (AgressiveStrategy). Horny cells look for a same-strain partner to pair with. Pairing
-            // destroys both cells, so the HasPaired checks only matter within the frame it happens.
+            // (AgressiveStrategy). Horny cells look for a Horny or Ordinary partner to pair with
+            // (ADR-0006). Pairing destroys both cells, so the HasPaired checks only matter within the
+            // frame it happens.
             if (cell.MatingEnum == MatingEnum.Horny)
             {
                 cell.AddTargetingRule(view => !cell.HasPaired
                                               && view.CellSize == CellSize.Large
-                                              && view.MatingEnum == cell.MatingEnum
+                                              && HornyStrategy.AcceptsPartner(view.MatingEnum)
                                               && view.Deviation == DeviationEnum.Default
                                               && !view.HasPaired);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using DefaultNamespace;
+using Energy;
 using Interfaces;
 using MateStrategy;
 using TMPro;
@@ -34,7 +35,7 @@ namespace Cell.Selectable
             }
 
             LifetimeText.text = $"Age: {selectionInfo.Age} / {selectionInfo.MaxAge}";
-            EnergyText.text = $"Energy Gain: {selectionInfo.EnergyAmount}";
+            EnergyText.text = PayoutText(selectionInfo);
             SpeedText.text = $"Speed: {selectionInfo.speed}";
             
             if (selectionInfo.HasPaired)
@@ -62,8 +63,19 @@ namespace Cell.Selectable
                 image.transform.SetParent(TraitContainer.transform);
                 image.sprite = iconInstaller.GetSizeIcon(selectionInfo.CellSize);
             }
-            
-            
+
+
+        }
+
+        // What the cell's death will pay where it is now. A loss always costs Energy, whatever the dish.
+        private static string PayoutText(SelectionInfo selectionInfo)
+        {
+            if (selectionInfo.EnergyAmount < 0 || selectionInfo.Payout == DishPayout.Energy)
+            {
+                return $"Energy Gain: {selectionInfo.EnergyAmount}";
+            }
+
+            return selectionInfo.Payout == DishPayout.Food ? $"Food Gain: {selectionInfo.FoodAmount}" : "Gain: none";
         }
     }
 }

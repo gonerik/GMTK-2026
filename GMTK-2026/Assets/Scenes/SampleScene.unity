@@ -967,7 +967,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b92357bad0a3b4c852f4a3823da462, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 7.97
+  seedingAreas:
+  - dish: 0
+    center: {fileID: 884216027}
+    radius: 8
+  - dish: 1
+    center: {fileID: 918825575}
+    radius: 8
   minSpacing: 0.5
   cellLayer:
     serializedVersion: 2
@@ -979,7 +985,7 @@ MonoBehaviour:
   spawnOnStartCount: 2
   maxAlive: 0
   defaultSeedStrain: 1
-  foodPerCell: 2
+  predatorChance: 10
   gizmoColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!4 &309073844
 Transform:
@@ -1134,9 +1140,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalTimerPrefab: {fileID: -4479393231557173206, guid: 47ef5ebe738256b42991ceffa5d23507, type: 3}
   dragCursor: {fileID: 2800000, guid: 94e2e881fadd7c24cb4af4447866c8bf, type: 3}
-  foodSettings:
-    startingFood: 100
-    maxFood: 100
+  energySettings:
+    decayPerSecond: 1
 --- !u!114 &416343248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1155,6 +1160,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7013a380912f3994998f6689166478d6, type: 2}
   - {fileID: 11400000, guid: 3384d66f52a9f8b41beb5b2491ac859c, type: 2}
   - {fileID: 11400000, guid: 912b7d1a76d26bc4ba0a51cb8b7032a2, type: 2}
+  - {fileID: 11400000, guid: 3e9139e2aa958824fbb0cd7ba5fde0a0, type: 2}
   _monoInstallers:
   - {fileID: 416343247}
   - {fileID: 416343250}
@@ -1305,7 +1311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9433962, g: 0.8024933, b: 0.32484868, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4124,7 +4130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91e49d0b458b4d2bb31ada3c22f860af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ageRate: 1.5
+  ageRate: 2
   payout: 2
 --- !u!68 &1422336353
 EdgeCollider2D:
@@ -4260,7 +4266,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1601711890
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4444,7 +4450,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 4.239746, y: -3.5999985}
+  m_AnchoredPosition: {x: 4.239746, y: -3.5999756}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1617597249
@@ -4791,6 +4797,18 @@ PrefabInstance:
     - target: {fileID: 5559892769066766703, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -108.33333
+      objectReference: {fileID: 0}
+    - target: {fileID: 6797380758844913838, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
+      propertyPath: m_Color.b
+      value: 0.35862166
+      objectReference: {fileID: 0}
+    - target: {fileID: 6797380758844913838, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
+      propertyPath: m_Color.g
+      value: 0.6698113
+      objectReference: {fileID: 0}
+    - target: {fileID: 6797380758844913838, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
+      propertyPath: m_Color.r
+      value: 0.3254272
       objectReference: {fileID: 0}
     - target: {fileID: 8879842706210641768, guid: 31313f7cba5ccb24385e74f95af8e7a0, type: 3}
       propertyPath: m_AnchoredPosition.x

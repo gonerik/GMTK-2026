@@ -6,13 +6,6 @@ namespace Energy
     // The board's Food: earned when cells die in the Food dish, spent by Seeding. Never below 0 or above Max.
     public class FoodService : IMeter
     {
-        [Serializable]
-        public class Settings
-        {
-            [Min(0)] public int startingFood = 100;
-            [Min(1)] public int maxFood = 100;
-        }
-
         public event Action<int> OnChanged;
 
         // A Payout that landed as Food somewhere in the world, with the amount the cell paid rather than what
@@ -22,10 +15,10 @@ namespace Energy
         public int Current { get; private set; }
         public int Max { get; }
 
-        public FoodService(Settings settings)
+        public FoodService(FoodConfig config)
         {
-            Max = settings.maxFood;
-            Current = Mathf.Clamp(settings.startingFood, 0, Max);
+            Max = config.MaxFood;
+            Current = Mathf.Clamp(config.StartingFood, 0, Max);
         }
 
         public void AddFood(int amount, Vector3 worldPosition)

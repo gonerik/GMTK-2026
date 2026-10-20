@@ -14,7 +14,7 @@ public class GameInstaller : MonoInstaller
 {
     [SerializeField] private GlobalTimer globalTimerPrefab;
     [SerializeField] private Texture2D dragCursor;
-    [SerializeField] private FoodService.Settings foodSettings = new FoodService.Settings();
+    [SerializeField] private EnergyService.Settings energySettings = new EnergyService.Settings();
 
     public override void InstallBindings()
     {
@@ -31,16 +31,18 @@ public class GameInstaller : MonoInstaller
         SignalBusInstaller.Install(Container);
         //Container.Bind<ISceneLoader>().To<SceneLoader>().AsSingle();
         Container.BindInterfacesAndSelfTo<CellVisualAssembler>().AsTransient().NonLazy();
+        Container.BindInstance(energySettings);
         Container.BindInterfacesAndSelfTo<EnergyService>().AsSingle().NonLazy();
         Container.DeclareSignal<EnergyService.OnEnergyGoalReachedSignal>();
         Container.DeclareSignal<EnergyService.OnEnergyLostSignal>();
-        // Plain Bind, not BindInterfacesAndSelfTo: EnergyService already holds the IMeter binding.
-        Container.BindInstance(foodSettings);
+        // Plain Bind, not BindInterfacesAndSelfTo: EnergyService already holds the IMeter binding. Its numbers
+        // come from the FoodConfig asset, a ScriptableObjectInstaller on the SceneContext.
         Container.Bind<FoodService>().AsSingle();
         Container.DeclareSignal<GlobalTimer.OnLoseSignal>();
         Container.Bind<StrainDiscovery>().AsSingle();
         Container.DeclareSignal<StrainDiscovery.StrainDiscoveredSignal>();
         Container.DeclareSignal<ReelSelectorController.SeedStrainChangedSignal>();
+        Container.DeclareSignal<CameraSwitchButton.DishSelectedSignal>();
         Container.BindInterfacesAndSelfTo<NavigationSystem>().AsSingle().NonLazy();
         Container.Bind<GlobalTimer>()
             .FromComponentInNewPrefab(globalTimerPrefab)

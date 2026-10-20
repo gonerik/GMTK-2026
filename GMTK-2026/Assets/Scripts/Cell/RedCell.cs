@@ -18,8 +18,12 @@ namespace DefaultNamespace
         [SerializeField] private MatingEnum matingEnum;
         [SerializeField] private int energyAmount;
         [SerializeField] private float moveSpeed;
-        [SerializeField, Min(0), Tooltip("Energy lost each time this Predator kills a cell. Replaces the victim's own payout.")]
+        [SerializeField, Min(0), Tooltip("Energy lost each time this Predator's Bite kills a cell, on top of the victim's own payout.")]
         private int killPenalty = 5;
+        [SerializeField, Min(0.05f), Tooltip("Seconds between this Predator's Bites while it touches cells. The first Bite lands on touch.")]
+        private float biteInterval = 1f;
+        [SerializeField, Min(1), Tooltip("Bites a Small Predator needs to kill a fresh Small cell. A cell takes this many per stage, and a Predator bites for its own stage.")]
+        private int bitesPerStage = 3;
 
         public event Action<IVisualyConfigurable> OnReinitialized;
         public DeviationEnum Deviation => DeviationEnum.Red;
@@ -36,6 +40,10 @@ namespace DefaultNamespace
         private float age;
         private float ageRate = 1;
         private SpriteRenderer spriteRenderer;
+        // Cells this Predator is touching, with the collider each touched it through.
+        private readonly Dictionary<CellUnit, Collider2D> contacts = new Dictionary<CellUnit, Collider2D>();
+        private readonly List<CellUnit> biteBuffer = new List<CellUnit>();
+        private float nextBiteTime;
 
         private const string DieSound = "event:/Cell dies";
         private const float LifeTick = 1f;
@@ -99,21 +107,80 @@ namespace DefaultNamespace
 
         private void OnCollisionEnter2D(Collision2D other)
         {
-            // A Predator kills any cell it touches, whatever its stage or strain, and the kill costs
-            // killPenalty energy in place of the victim's own payout. Acid and other Predators are not
-            // CellUnits, so they are never touched. A cell already latched IsMating is being destroyed by
-            // its own contact this frame.
+            // A Predator Bites any cell it touches, whatever its stage or strain. Acid and other Predators
+            // are not CellUnits, so they are never touched.
             if (other.gameObject.TryGetComponent(out CellUnit cell))
             {
-                if (!cell.IsMating)
+                contacts[cell] = other.collider;
+                TryBite();
+            }
+        }
+
+        private void OnCollisionExit2D(Collision2D other)
+        {
+            if (other.gameObject.TryGetComponent(out CellUnit cell))
+            {
+                contacts.Remove(cell);
+            }
+        }
+
+        // Bites every cell still touching, at most once per biteInterval. The first Bite lands on touch, and
+        // the one cooldown means bouncing on and off a cell never bites faster.
+        private void TryBite()
+        {
+            if (contacts.Count == 0 || Time.time < nextBiteTime) return;
+
+            biteBuffer.Clear();
+            biteBuffer.AddRange(contacts.Keys);
+            bool bitten = false;
+            foreach (var cell in biteBuffer)
+            {
+                // Exit callbacks are not guaranteed when a cell is destroyed or its collider is disabled by a
+                // drag, so check the contact is still live. A cell latched IsMating is already being destroyed.
+                if (!cell || cell.IsMating || !rb.IsTouching(contacts[cell]))
                 {
-                    cell.DestroyWithPayout(-killPenalty);
+                    contacts.Remove(cell);
+                    continue;
                 }
+                Bite(cell);
+                bitten = true;
+            }
+
+            if (bitten)
+            {
+                nextBiteTime = Time.time + biteInterval;
+            }
+        }
+
+        // A cell takes bitesPerStage Bites' worth per stage, and a Predator bites for its own stage. Only the
+        // killing Bite costs killPenalty energy; the victim still dies paying its own payout.
+        private void Bite(CellUnit cell)
+        {
+            float share = StageRank(cellSize) / (float)(bitesPerStage * StageRank(cell.CellSize));
+            if (cell.TakeBite(share))
+            {
+                energyService.AddEnergy(-killPenalty, cell.transform.position);
+                contacts.Remove(cell);
+            }
+        }
+
+        private static int StageRank(CellSize stage)
+        {
+            switch (stage)
+            {
+                case CellSize.Medium:
+                    return 2;
+                case CellSize.Large:
+                    return 3;
+                default:
+                    return 1;
             }
         }
 
         void FixedUpdate()
         {
+            TryBite();
+
             Vector2 targetDirection = Vector2.zero;
             bool shouldMove = false;
 

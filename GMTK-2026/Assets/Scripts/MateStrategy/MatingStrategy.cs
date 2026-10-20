@@ -64,8 +64,9 @@ namespace DefaultNamespace
 
         }
 
-        // Horny cells mate with Horny or Ordinary cells (ADR-0006). Shared by targeting and by
-        // MatingService's strain gate, so a Horny cell only chases what it can actually mate with.
+        // Horny cells mate and pair with Horny or Ordinary cells (ADR-0006). Shared by mating and pairing
+        // targeting and by MatingService's strain gate, so a Horny cell only chases what it can actually
+        // mate or pair with.
         public static bool AcceptsPartner(MatingEnum strain)
         {
             return strain == MatingEnum.Horny || strain == MatingEnum.Default;

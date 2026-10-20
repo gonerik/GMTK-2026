@@ -1,13 +1,18 @@
 ﻿using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
 namespace Energy
 {
-    public class EnergyService : IDisposable, IMeter
+    public class EnergyService : ITickable, IMeter
     {
+        [Serializable]
+        public class Settings
+        {
+            // Energy lost per second of game time; fractions carry over between frames. 0 switches decay off.
+            [Min(0)] public float decayPerSecond = 1f;
+        }
+
         private const int MaxEnergy = 100;
 
         public struct OnEnergyGoalReachedSignal
@@ -35,19 +40,15 @@ namespace Energy
         
         [Inject] private SignalBus signalBus;
         private int energyAmount;
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly Settings settings;
+        private float decayOwed;
+        private bool hasRunOut;
         private const string LoseSound = "event:/Lose";
-        
-        public EnergyService()
-        {
-            //LeakEnergy(_cts.Token).Forget();
-            energyAmount = 40;
-        }
 
-        public void Dispose()
+        public EnergyService(Settings settings)
         {
-            _cts.Cancel();
-            _cts.Dispose();
+            this.settings = settings;
+            energyAmount = 40;
         }
 
         public void AddEnergy(int amount)
@@ -66,20 +67,22 @@ namespace Energy
             OnPayout?.Invoke(amount, worldPosition);
         }
 
-        private async UniTaskVoid LeakEnergy(CancellationToken cancellationToken)
+        // The rate is read every frame, so it can be tuned on GameInstaller during Play mode. Time.deltaTime is
+        // 0 while paused, so the decay stops with the game.
+        public void Tick()
         {
-            while (cancellationToken.IsCancellationRequested == false)
-            {
-                await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: cancellationToken);
-                energyAmount -= 1;
-                if (energyAmount < 0) energyAmount = 0;
-                OnEnergyChanged?.Invoke(energyAmount);
-                if (energyAmount <= 0)
-                {
-                    FMODUnity.RuntimeManager.PlayOneShot(LoseSound);
-                    signalBus.Fire(new OnEnergyLostSignal());
-                }
-            }
+            decayOwed += settings.decayPerSecond * Time.deltaTime;
+            if (decayOwed < 1f) return;
+
+            int loss = (int)decayOwed;
+            decayOwed -= loss;
+            energyAmount = Mathf.Max(energyAmount - loss, 0);
+            OnEnergyChanged?.Invoke(energyAmount);
+            if (energyAmount > 0 || hasRunOut) return;
+
+            hasRunOut = true;
+            FMODUnity.RuntimeManager.PlayOneShot(LoseSound);
+            signalBus.Fire(new OnEnergyLostSignal());
         }
     }
 }

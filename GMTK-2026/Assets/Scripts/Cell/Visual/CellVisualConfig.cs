@@ -17,6 +17,15 @@ namespace DefaultNamespace
         [SerializeField, Range(0f, 1f)] private float maxLifeOpacity = 1f;
         [Tooltip("Sprite opacity of a cell about to die of age.")]
         [SerializeField, Range(0f, 1f)] private float minLifeOpacity = 0.25f;
+        [Tooltip("Local CircleCollider2D radius shared by the cell and Predator prefabs. Scaled by the stage's size modifier to get a body's world radius.")]
+        [SerializeField, Min(0f)] private float bodyRadius = 3f;
+        [Tooltip("Tint a cell's sprite flashes to when a Predator bites it.")]
+        [SerializeField] private Color biteFlashColor = Color.red;
+        [Tooltip("Seconds a bitten cell takes to fade from the flash back to its own tint.")]
+        [SerializeField, Min(0f)] private float biteFlashDuration = 0.25f;
+
+        public Color BiteFlashColor => biteFlashColor;
+        public float BiteFlashDuration => biteFlashDuration;
 
         public override void InstallBindings()
         {
@@ -24,6 +33,9 @@ namespace DefaultNamespace
         }
 
         public float GetCellSizeModifier(CellSize cellSize) => cellSizeModifiers[cellSize];
+
+        // World radius of an unnourished body of this stage, once its scale tween has finished.
+        public float GetBodyRadius(CellSize cellSize) => bodyRadius * cellSizeModifiers[cellSize];
 
         // A partly nourished cell sits between its own stage's scale and the next one's, in proportion to
         // its growth (0..1). Large has no next stage, so it swells toward burstSwell instead.

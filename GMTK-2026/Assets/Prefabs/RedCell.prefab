@@ -117,8 +117,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellSize: 1
   matingEnum: 0
-  energyAmount: -1
+  energyAmount: 0
   moveSpeed: 4
+  killPenalty: 5
+  biteInterval: 0.5
+  bitesPerStage: 3
 --- !u!114 &7623628549499430750
 MonoBehaviour:
   m_ObjectHideFlags: 0

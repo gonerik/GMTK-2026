@@ -14,3 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   matingDuration: 1
   mutationChanceGrowthRate: 0
+  stageNourishmentRatio: 3
+  mealsToGrow: 3
+  secondPartnerCopyChance: 20
+  selfCopyChance: 7
+  predatorArrivalGap: 1
+  predatorArrivalAttempts: 8

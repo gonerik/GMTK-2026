@@ -17,10 +17,17 @@ public class MatingConfig : ScriptableObject
     [SerializeField, Range(0, 100)] private int secondPartnerCopyChance = 50;
     [Tooltip("Chance (%) that a Horny mating's Brood holds a copy of the Horny parent.")]
     [SerializeField, Range(0, 100)] private int selfCopyChance = 50;
+    [Header("Predators")]
+    [Tooltip("Clear edge-to-edge gap between a Predator and the new cells it arrives beside.")]
+    [SerializeField, Min(0f)] private float predatorArrivalGap = 1f;
+    [Tooltip("Directions tried for a Predator's arrival before it is skipped because dish walls leave no room.")]
+    [SerializeField, Min(1)] private int predatorArrivalAttempts = 8;
     public float MatingDuration => matingDuration;
     public float MutationChanceGrowthRate => mutationChanceGrowthRate;
     public int SecondPartnerCopyChance => secondPartnerCopyChance;
     public int SelfCopyChance => selfCopyChance;
+    public float PredatorArrivalGap => predatorArrivalGap;
+    public int PredatorArrivalAttempts => predatorArrivalAttempts;
 
     // What a devoured cell of this stage adds to its devourer's Nourishment.
     public int GetNourishment(CellSize cellSize)
