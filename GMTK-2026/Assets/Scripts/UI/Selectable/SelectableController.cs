@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Cysharp.Threading.Tasks;
+using DefaultNamespace;
 using Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,15 +11,17 @@ namespace Cell.Selectable
     public class SelectableController : IInitializable, System.IDisposable
     {
         private DefaultActions defaultActions;
+        private TutorialGate tutorialGate;
         private ISelectable _currentSelectable;
         private CancellationTokenSource _cts;
         
         public event System.Action<SelectionInfo> OnSelected;
         
         [Inject]
-        public SelectableController(DefaultActions defaultActions)
+        public SelectableController(DefaultActions defaultActions, TutorialGate tutorialGate)
         {
             this.defaultActions = defaultActions;
+            this.tutorialGate = tutorialGate;
         }
 
         public void Initialize()
@@ -34,6 +37,8 @@ namespace Cell.Selectable
 
         private void OnDragPerformed(InputAction.CallbackContext context)
         {
+            if (tutorialGate.BlocksInput) return;
+
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
             Collider2D hit = Physics2D.OverlapCircle(worldPos, 0.1f);

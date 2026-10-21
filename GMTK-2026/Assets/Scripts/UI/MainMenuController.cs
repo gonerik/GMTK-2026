@@ -11,6 +11,8 @@ namespace UI
     [RequireComponent(typeof(Canvas))]
     public class MainMenuController : MonoBehaviour
     {
+        private const string GameScene = "SampleScene";
+
         [Inject] private readonly MusicService musicService;
         //[Inject] private readonly ISceneLoader sceneLoader;
         [SerializeField] private SettingMenu settingMenu;
@@ -59,9 +61,11 @@ namespace UI
             Application.Quit();
         }
         
+        // Called by name from the Play timeline in MainMenu, WinState and LoseState. Each of them starts a new run,
+        // so this loads the game scene rather than the next build index.
         public void LoadNextScene()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            SceneManager.LoadScene(GameScene);
         }
     }
 }

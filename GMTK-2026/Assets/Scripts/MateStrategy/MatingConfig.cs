@@ -12,6 +12,8 @@ public class MatingConfig : ScriptableObject
     [SerializeField] private int stageNourishmentRatio = 3;
     [Tooltip("How many meals of its own stage an Agressive cell needs to grow a stage, or to Burst when Large.")]
     [SerializeField] private int mealsToGrow = 3;
+    [Tooltip("Seconds of life a meal gives back to its devourer, whatever the prey's stage, never past its full lifespan.")]
+    [SerializeField, Min(0f)] private float lifeRestoredPerMeal = 3f;
     [Header("Horny Brood")]
     [Tooltip("Starting chance (%) that a Horny mating's Brood holds a second copy of the partner. The first copy is guaranteed. The chance returns here whenever the second copy appears.")]
     [SerializeField, Range(0, 100)] private int secondPartnerCopyChance = 50;
@@ -28,6 +30,7 @@ public class MatingConfig : ScriptableObject
     [SerializeField, Min(1)] private int predatorArrivalAttempts = 8;
     public float MatingDuration => matingDuration;
     public float MutationChanceGrowthRate => mutationChanceGrowthRate;
+    public float LifeRestoredPerMeal => lifeRestoredPerMeal;
     public int SecondPartnerCopyChance => secondPartnerCopyChance;
     public int SecondPartnerCopyChanceGrowth => secondPartnerCopyChanceGrowth;
     public int SelfCopyChance => selfCopyChance;

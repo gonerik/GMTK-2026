@@ -1,15 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Zenject;
 
+// Drives the adaptive music and the progress sprite. It no longer ends the run: only Energy does.
 public class GlobalTimer : MonoBehaviour
 {
-    public struct OnLoseSignal
-    {
-        
-    }
-    [Inject] public SignalBus signalBus; 
     [Header("Timer")]
     public float totalTime = 100f;   // total duration of your timer
     private float elapsedTime = 0f;
@@ -17,8 +12,6 @@ public class GlobalTimer : MonoBehaviour
     private bool _goTo2Triggered;
     private bool _goTo3Triggered;
 
-    private const string winSound = "event:/Win";
-    
     public float ProgressTime => elapsedTime / totalTime;
     public float ElapsedTime => elapsedTime;
     
@@ -38,12 +31,6 @@ public class GlobalTimer : MonoBehaviour
         {
             _goTo3Triggered = true;
             FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Go To 3", 1);
-        }
-
-        if(elapsedTime >= totalTime)
-        {
-            FMODUnity.RuntimeManager.PlayOneShot(winSound);
-            signalBus.Fire<OnLoseSignal>();
         }
     }
 }

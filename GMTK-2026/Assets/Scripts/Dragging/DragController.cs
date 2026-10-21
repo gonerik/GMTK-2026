@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CoreLoop.Interfaces;
+using DefaultNamespace;
 using GameStateMachine.States;
 using Interfaces;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Dragging
         private readonly IGameStateMachine gameStateMachine;
         private readonly DragState.Factory dragStateFactory;
         private readonly PlaceDraggedState.Factory placeDraggedStateFactory;
+        private readonly TutorialGate tutorialGate;
         private readonly Texture2D cursorTexture;
 
         private Camera mainCamera;
@@ -38,12 +40,14 @@ namespace Dragging
             IGameStateMachine gameStateMachine,
             DragState.Factory dragStateFactory,
             PlaceDraggedState.Factory placeDraggedStateFactory,
+            TutorialGate tutorialGate,
             [InjectOptional] Texture2D cursorTexture)
         {
             this.defaultActions = defaultActions;
             this.gameStateMachine = gameStateMachine;
             this.dragStateFactory = dragStateFactory;
             this.placeDraggedStateFactory = placeDraggedStateFactory;
+            this.tutorialGate = tutorialGate;
             this.cursorTexture = cursorTexture;
         }
 
@@ -58,6 +62,9 @@ namespace Dragging
         {
             defaultActions.Level.Drag.performed -= OnDragPerformed;
             defaultActions.Level.PlaceDragged.performed -= OnPlacePerformed;
+
+            // The run can end mid-drag, and the cursor would otherwise outlive the scene.
+            if (isCarrying) Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
 
         public void Tick()
@@ -75,7 +82,8 @@ namespace Dragging
 
         private void OnDragPerformed(InputAction.CallbackContext context)
         {
-            if (isCarrying) return;
+            // A press that hides a tutorial is for the tutorial alone; the cell under it stays put.
+            if (isCarrying || tutorialGate.BlocksInput) return;
 
             Dragable dragable = FindNearestDragable(Mouse.current.position.ReadValue());
             if (dragable == null) return;

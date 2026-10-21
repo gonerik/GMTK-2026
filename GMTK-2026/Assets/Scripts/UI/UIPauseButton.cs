@@ -1,6 +1,7 @@
 using System;
 using Audio.Interfaces;
 using CoreLoop.Interfaces;
+using DefaultNamespace;
 using GameStateMachine.States;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,6 +17,7 @@ namespace UI
         [Inject] IGameStateMachine gameStateMachine;
         [Inject] InMenuState.Factory inMenuState;
         [Inject] GameLoopState.Factory gameLoopState;
+        [Inject] TutorialGate tutorialGate;
 
         public static event Action<bool> OnGamePaused;
         private Image buttonImage;
@@ -78,6 +80,9 @@ namespace UI
         
         private void Update()
         {
+            // A tutorial pauses the game on its own; pausing over one would resume time with it still up.
+            if (tutorialGate.BlocksInput) return;
+
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 PauseGame();

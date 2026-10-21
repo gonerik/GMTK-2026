@@ -295,7 +295,7 @@ namespace MateStrategy
         // An Agressive cell touching a cell it can devour destroys it, and the prey pays out its energy
         // as any death does; a Large Horny prey also leaves a Horny Acid. Its Nourishment goes to the
         // devourer; enough of it grows the devourer a stage in place, carrying over the excess, and a Large
-        // devourer Bursts instead.
+        // devourer Bursts instead. A meal short of either heals the devourer a little.
         private bool TryDevour(IMate devourerMate, IMate preyMate)
         {
             if (!(devourerMate is CellUnit devourer) || !(preyMate is CellUnit prey))
@@ -324,6 +324,8 @@ namespace MateStrategy
             if (nourishment < needed)
             {
                 devourer.Nourish(nourishment);
+                // Only here: growing restores the full lifespan, and Bursting ends it.
+                devourer.Heal(matingConfig.LifeRestoredPerMeal);
             }
             else if (devourer.CellSize == CellSize.Large)
             {

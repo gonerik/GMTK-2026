@@ -165,6 +165,12 @@ public class CellUnit : MonoBehaviour, IMate, IVisualyConfigurable, ISelectable
         visualAssembler.Regrow(this, GrowthProgress);
     }
 
+    // A meal's heal: gives back life this cell has lost to age or Bites, never past its full lifespan.
+    public void Heal(float life)
+    {
+        age = Mathf.Min(age + life, lifetimeConfig.CalculateLifetime(matingEnum, cellSize, Deviation));
+    }
+
     // Devouring's stage-up: the same cell a stage larger, carrying over any excess Nourishment. It keeps
     // its dish age rate and deviation but starts the new stage's full lifespan.
     public void GrowInPlace(CellSize newSize, int carriedNourishment)

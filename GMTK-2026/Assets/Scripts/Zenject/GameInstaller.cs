@@ -6,6 +6,7 @@ using DefaultNamespace;
 using DefaultNamespace.Zenject;
 using Dragging;
 using Energy;
+using UI;
 using UI.Reel;
 using UnityEngine;
 using Zenject;
@@ -33,13 +34,14 @@ public class GameInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<CellVisualAssembler>().AsTransient().NonLazy();
         Container.BindInstance(energySettings);
         Container.BindInterfacesAndSelfTo<EnergyService>().AsSingle().NonLazy();
-        Container.DeclareSignal<EnergyService.OnEnergyGoalReachedSignal>();
-        Container.DeclareSignal<EnergyService.OnEnergyLostSignal>();
+        Container.DeclareSignal<EnergyService.OnWinSignal>();
+        Container.DeclareSignal<EnergyService.OnDefeatSignal>();
+        Container.BindInterfacesTo<RunEndLoader>().AsSingle();
         // Plain Bind, not BindInterfacesAndSelfTo: EnergyService already holds the IMeter binding. Its numbers
         // come from the FoodConfig asset, a ScriptableObjectInstaller on the SceneContext.
         Container.Bind<FoodService>().AsSingle();
-        Container.DeclareSignal<GlobalTimer.OnLoseSignal>();
         Container.Bind<StrainDiscovery>().AsSingle();
+        Container.Bind<TutorialGate>().AsSingle();
         Container.DeclareSignal<StrainDiscovery.StrainDiscoveredSignal>();
         Container.DeclareSignal<ReelSelectorController.SeedStrainChangedSignal>();
         Container.DeclareSignal<CameraSwitchButton.DishSelectedSignal>();
